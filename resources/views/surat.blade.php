@@ -33,10 +33,10 @@ p {
       <div class="collapse navbar-collapse" id="navbarsExample07XL">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/dashboard">Home</a>
+            <a class="nav-link" href="/dashboard">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/surat">Surat</a>
+            <a class="nav-link active" aria-current="page" href="/surat">Surat</a>
           </li>
         </ul>
         <!--<form>
@@ -44,7 +44,7 @@ p {
         </form>-->
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="/"><i class="bi bi-box-arrow-right"></i>Logout</a>
+                <a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right"></i>Logout</a>
             </li>
         </ul>
       </div>
