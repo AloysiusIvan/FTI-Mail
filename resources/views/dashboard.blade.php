@@ -13,7 +13,7 @@
 </head>
 <style>
 .b-example-divider {
-  height: 33px;
+  height: 24px;
 }
 .bg-header {
   background-color: lightgreen;
