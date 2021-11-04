@@ -27,7 +27,7 @@
 <body style="background-color:#e7f1ff">
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm" aria-label="Ninth navbar example">
     <div class="container-xl">
-      <a class="navbar-brand" href="#"><img class="img-fluid" src="https://i.ibb.co/kmQgNHZ/ff1d228afcc78e7657fabc6eb411c8bb.png" width="155" height="24"></a>
+      <a class="navbar-brand" href="/dashboard"><img class="img-fluid" src="https://i.ibb.co/kmQgNHZ/ff1d228afcc78e7657fabc6eb411c8bb.png" width="155" height="24"></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL" aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -39,6 +39,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/surat">Surat</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/arsip">Arsip</a>
           </li>
         </ul>
         <!--<form>
@@ -95,7 +98,7 @@
                                     </div>
                                     <div class="mt-4 text-center small">
                                         <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i><a href="/surat">Selengkapnya</a>
+                                            <i class="fas fa-circle text-primary"></i><a href="/arsip">Selengkapnya</a>
                                         </span>
                                     </div>
                                 </div>

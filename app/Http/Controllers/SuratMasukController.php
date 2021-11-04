@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class SuratMasukController extends Controller
 {
@@ -44,7 +45,7 @@ class SuratMasukController extends Controller
             'nama'=>$request->name,
             'levels'=>$request->levels,
         ]);
-        return redirect('surat');
+        return redirect('surat')->with('success', 'Task Created Successfully!');
     }
 
     /**

@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
-use Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
-class SuratController extends Controller
+class ArsipController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +15,8 @@ class SuratController extends Controller
      */
     public function index()
     {
-        $username = auth()->user()->username;
-        $surat = SuratMasuk::where('username', $username)->get();
-        return view('surat', compact('surat'));
+        $surat = SuratMasuk::all();
+        return view('arsip', compact('surat'));
     }
 
     /**
@@ -39,16 +37,7 @@ class SuratController extends Controller
      */
     public function store(Request $request)
     {
-        SuratMasuk::create([
-            'tujuan'=>$request->tujuan,
-            'mitra'=>$request->mitra,
-            'alamat_mitra'=>$request->alamat_mitra,
-            'keterangan'=>$request->keterangan,
-            'username'=>$request->username,
-            'nama'=>$request->name,
-            'levels'=>$request->levels,
-        ]);
-        return redirect('surat')->with('toast_success', 'Record berhasil disimpan!');
+        //
     }
 
     /**
@@ -82,9 +71,7 @@ class SuratController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $surat = SuratMasuk::findorfail($id);
-        $surat->update($request->all());
-        return redirect('surat')->with('toast_success', 'Record berhasil diupdate!');
+        //
     }
 
     /**
@@ -95,8 +82,6 @@ class SuratController extends Controller
      */
     public function destroy($id)
     {
-        $surat = SuratMasuk::findorfail($id);
-        $surat->delete();
-        return back()->with('toast_success', 'Record berhasil dihapus!');
+        //
     }
 }
