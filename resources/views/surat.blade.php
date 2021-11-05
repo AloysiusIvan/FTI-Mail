@@ -373,7 +373,11 @@ table tr td:first-child::before {
 						<label>Tujuan Surat</label>
 						<select class="form-control" id="tujuan" name="tujuan" required>
 						<option value="" selected disabled hidden>Choose here</option>
+						@if (auth()->user()->levels=="mahasiswa")
 						<option>Surat Izin KP</option>
+						@else
+						<option>Surat Tugas</option>
+						@endif
 						<option>Surat Keterangan</option>
 						<option>Berita Acara</option>
 						</select>
@@ -415,7 +419,11 @@ table tr td:first-child::before {
 					<label>Tujuan Surat</label>
 						<select class="form-control" id="tujuan" name="tujuan" required>
 						<option value="" selected disabled hidden>Choose here</option>
+						@if (auth()->user()->levels=="mahasiswa")
 						<option value="Surat Izin KP" <?php if($item->tujuan=="Surat Izin KP") echo 'selected="selected"'; ?> >Surat Izin KP</option>
+						@else
+						<option value="Surat Tugas" <?php if($item->tujuan=="Surat Tugas") echo 'selected="selected"'; ?> >Surat Tugas</option>
+						@endif
 						<option value="Surat Keterangan" <?php if($item->tujuan=="Surat Keterangan") echo 'selected="selected"'; ?> >Surat Keterangan</option>
 						<option value="Berita Acara" <?php if($item->tujuan=="Berita Acara") echo 'selected="selected"'; ?> >Berita Acara</option>
 						</select>
