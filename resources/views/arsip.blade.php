@@ -114,6 +114,9 @@ table.table td a:hover {
 table.table td a.edit {
 	color: #FFC107;
 }
+table.table td a.print {
+	color: #0d6efd;
+}
 table.table td a.delete {
 	color: #F44336;
 }
@@ -243,9 +246,19 @@ table tr td:first-child::before {
           <li class="nav-item">
             <a class="nav-link" aria-current="page" href="/dashboard">Home</a>
           </li>
+          @if (auth()->user()->levels=="mahasiswa" || auth()->user()->levels=="dosen")
           <li class="nav-item">
             <a class="nav-link" href="/surat">Surat</a>
           </li>
+          @else
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">Surat</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
+              <li><a class="dropdown-item" href="/suratadmin">Surat Masuk</a></li>
+              <li><a class="dropdown-item" href="/suratkeluar">Surat Keluar</a></li>
+            </ul>
+          </li>
+          @endif
           <li class="nav-item">
             <a class="nav-link active" href="/arsip">Arsip</a>
           </li>
@@ -288,24 +301,37 @@ table tr td:first-child::before {
 						<th>Mitra</th>
 						<th>Alamat Mitra</th>
 						<th>Keterangan</th>
-            <th>Status</th>
-						<th></th>
+            			<th>Status</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
-					
+					@foreach ($surat as $item)
 					<tr>
 						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-            <td></td>
+						<td>{{ $item-> tujuan }}</td>
+						<td>{{ $item-> mitra }}</td>
+						<td>{{ $item-> alamat_mitra }}</td>
+						<td>{{ $item-> keterangan }}</td>
+						@if ($item-> status == "Proses")
+						<td ><b><font color="#FFC107">{{ $item-> status }}</font></b></td>
+						@endif
+						@if ($item-> status == "Ditolak")
+						<td ><b><font color="#F44336">{{ $item-> status }}</font></b></td>
+						@endif
+						@if ($item-> status == "Selesai")
+						<td ><b><font color="#198754">{{ $item-> status }}</font></b></td>
+						@endif
 						<td>
-							
+						@if ($item-> status == "Ditolak")
+						<a href="#editSuratModal" class="edit" data-toggle="modal" data-target="#editSuratModal{{$item->id}}"><i class="bi bi-pencil-fill"></i></a>
+						@endif
+						@if ($item-> status == "Selesai")
+						<a href="/cetaksurat" class="print" target="_blank"><i class="bi bi-printer-fill"></i></a>
+						@endif
 						</td>
 					</tr>
-					
+					@endforeach
 				</tbody>
 			</table>
 			<div class="clearfix">
@@ -321,5 +347,52 @@ table tr td:first-child::before {
 				</ul>
 			</div>
 </div>
+<!-- Edit Modal HTML -->
+@foreach($surat as $item)
+<div id="editSuratModal{{$item->id}}" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="{{ url('updatesuratarsip',$item->id) }}" method="post">
+			@csrf
+				<div class="modal-header">						
+					<h4 class="modal-title">Edit Record</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+					<label>Tujuan Surat</label>
+						<select class="form-control" id="tujuan" name="tujuan" required>
+						<option value="" selected disabled hidden>Choose here</option>
+						@if (auth()->user()->levels=="mahasiswa")
+						<option value="Surat Izin KP" <?php if($item->tujuan=="Surat Izin KP") echo 'selected="selected"'; ?> >Surat Izin KP</option>
+						@else
+						<option value="Surat Tugas" <?php if($item->tujuan=="Surat Tugas") echo 'selected="selected"'; ?> >Surat Tugas</option>
+						@endif
+						<option value="Surat Keterangan" <?php if($item->tujuan=="Surat Keterangan") echo 'selected="selected"'; ?> >Surat Keterangan</option>
+						<option value="Berita Acara" <?php if($item->tujuan=="Berita Acara") echo 'selected="selected"'; ?> >Berita Acara</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Nama Mitra</label>
+						<input type="text" class="form-control" id="mitra" name="mitra" value="{{ $item->mitra }}" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat Mitra</label>
+						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{ $item->alamat_mitra }}</textarea>
+					</div>
+					<div class="form-group">
+						<label>Keterangan</label>
+						<textarea class="form-control" id="keterangan" name="keterangan" required>{{ $item->keterangan }}</textarea>
+					</div>					
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="submit" class="btn btn-info" value="Save">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+@endforeach
 </body>
 </html>

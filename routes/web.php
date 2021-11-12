@@ -5,6 +5,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\ArsipController;
+use App\Http\Controllers\SuratAdminController;
+use App\Http\Controllers\SuratKeluarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +31,16 @@ Route::get('/logout', [LoginController::class,'logout'])->name('logout');
 Route::post('/addsurat', [SuratController::class,'store'])->name('addsurat');
 Route::delete('deletesurat/{id}', [SuratController::class,'destroy'])->name('deletesurat');
 Route::post('updatesurat/{id}', [SuratController::class,'update'])->name('updatesurat');
+Route::post('updatesuratarsip/{id}', [SuratController::class,'edit'])->name('updatesuratarsip');
+Route::post('tolaksurat/{id}', [SuratAdminController::class,'destroy'])->name('tolaksurat');
+Route::post('tolaksuratkeluar/{id}', [SuratKeluarController::class,'destroy'])->name('tolaksuratkeluar');
+Route::post('prosessurat/{id}', [SuratAdminController::class,'store'])->name('prosessurat');
+Route::post('updatesuratkeluar/{id}', [SuratKeluarController::class,'update'])->name('updatesuratkeluar');
+Route::post('createsurat/{id}', [SuratKeluarController::class,'edit'])->name('createsurat');
+Route::get('/cetaksurat', function () {
+    return view('template_surat.surat_tugas');
+});
+
 
 Route::group(['middleware' => ['auth']], function(){
     Route::get('/dashboard', function () {
@@ -36,4 +48,6 @@ Route::group(['middleware' => ['auth']], function(){
     });
     Route::get('/arsip', [ArsipController::class,'index'])->name('arsip');
     Route::get('/surat', [SuratController::class,'index'])->name('surat');
+    Route::get('/suratadmin', [SuratAdminController::class,'index'])->name('suratadmin');
+    Route::get('/suratkeluar', [SuratKeluarController::class,'index'])->name('suratkeluar');
 });

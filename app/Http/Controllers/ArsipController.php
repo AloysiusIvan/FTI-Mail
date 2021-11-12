@@ -15,7 +15,10 @@ class ArsipController extends Controller
      */
     public function index()
     {
-        $surat = SuratMasuk::all();
+        $username = auth()->user()->username;
+        $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
+            ->where([['username', $username], ['status', '!=', NULL]])
+            ->get(['surat_masuk.*', 'surat_keluar.status'])->sortByDesc('updated_at');
         return view('arsip', compact('surat'));
     }
 

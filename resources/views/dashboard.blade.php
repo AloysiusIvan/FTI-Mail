@@ -37,9 +37,19 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="/dashboard">Home</a>
           </li>
+          @if (auth()->user()->levels=="mahasiswa" || auth()->user()->levels=="dosen")
           <li class="nav-item">
             <a class="nav-link" href="/surat">Surat</a>
           </li>
+          @else
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">Surat</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
+              <li><a class="dropdown-item" href="/suratadmin">Surat Masuk</a></li>
+              <li><a class="dropdown-item" href="/suratkeluar">Surat Keluar</a></li>
+            </ul>
+          </li>
+          @endif
           <li class="nav-item">
             <a class="nav-link" href="/arsip">Arsip</a>
           </li>

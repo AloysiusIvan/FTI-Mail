@@ -114,6 +114,9 @@ table.table td a:hover {
 table.table td a.edit {
 	color: #FFC107;
 }
+table.table td a.check {
+	color: #198754;
+}
 table.table td a.delete {
 	color: #F44336;
 }
@@ -276,19 +279,13 @@ table tr td:first-child::before {
           <li class="nav-item">
             <a class="nav-link" href="/dashboard">Home</a>
           </li>
-          @if (auth()->user()->levels=="mahasiswa" || auth()->user()->levels=="dosen")
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/surat">Surat</a>
-          </li>
-          @else
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">Surat</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
-              <li><a class="dropdown-item" href="/surat">Surat Masuk</a></li>
-              <li><a class="dropdown-item" href="/surat">Surat Keluar</a></li>
+              <li><a class="dropdown-item" href="/suratadmin">Surat Masuk</a></li>
+              <li><a class="dropdown-item" href="/suratkeluar">Surat Keluar</a></li>
             </ul>
           </li>
-          @endif
 		  <li class="nav-item">
             <a class="nav-link" href="/arsip">Arsip</a>
           </li>
@@ -319,7 +316,8 @@ table tr td:first-child::before {
 					<div class="col-sm-6">
 					</div>
 					<div class="col-sm-6">
-						<a href="#addSuratModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i>Add New</a>					
+						<a href="#addSuratModal" class="btn btn-success" data-toggle="modal">Dosen</a>
+						<a href="#addSuratModal" class="btn btn-success" data-toggle="modal">Mahasiswa</a>											
 					</div>
 				</div>
 			</div>
@@ -329,9 +327,9 @@ table tr td:first-child::before {
 						<th>No</th>
 						<th>Tujuan Surat</th>
 						<th>Mitra</th>
-						<th>Alamat Mitra</th>
+						<th>Pembuat Surat</th>
 						<th>Keterangan</th>
-						<th>Actions</th>
+						<th style="width:135px; text-align:center;" >Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -340,11 +338,12 @@ table tr td:first-child::before {
 						<td></td>
 						<td>{{ $item-> tujuan }}</td>
 						<td>{{ $item-> mitra }}</td>
-						<td>{{ $item-> alamat_mitra }}</td>
+						<td>{{ $item-> nama }}</td>
 						<td>{{ $item-> keterangan }}</td>
 						<td>
-							<a href="#editSuratModal" class="edit" data-toggle="modal" data-target="#editSuratModal{{$item->id}}"><i class="bi bi-pencil-fill"></i></a>
-							<a href="#deleteSuratModal" class="delete" data-toggle="modal" data-target="#deleteSuratModal{{$item->id}}"><i class="bi bi-trash-fill"></i></a>
+							<a href="#infoSuratModal" class="edit" data-toggle="modal" data-target="#infoSuratModal{{$item->id}}"><i class="bi bi-info-square-fill"></i></a>
+							<a href="#prosesSuratModal" class="check" data-toggle="modal" data-target="#prosesSuratModal{{$item->id}}"><i class="bi bi-check-square-fill"></i></a>
+							<a href="#tolakSuratModal" class="delete" data-toggle="modal" data-target="#tolakSuratModal{{$item->id}}"><i class="bi bi-x-square-fill"></i></a>
 						</td>
 					</tr>
 					@endforeach
@@ -365,56 +364,40 @@ table tr td:first-child::before {
 		</div>
 	</div>
 </div>
-<!-- Add Modal HTML -->
-<div id="addSuratModal" class="modal fade">
+<!-- Proses Modal HTML -->
+@foreach($surat as $item)
+<div id="prosesSuratModal{{$item->id}}" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form action="/addsurat" method="post">
-			{{ csrf_field() }}
+			<form action="{{ url('prosessurat',$item->id) }}" method="post">
+			@csrf
 				<div class="modal-header">						
-					<h4 class="modal-title">Add New</h4>
+					<h4 class="modal-title">Proses Record</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
 				<div class="modal-body">					
 					<div class="form-group">
-						<input type="hidden" id="username" name="username" value="{{auth()->user()->username}}">
-						<input type="hidden" id="name" name="name" value="{{auth()->user()->name}}">
-						<input type="hidden" id="levels" name="levels" value="{{auth()->user()->levels}}">
-						<label>Tujuan Surat</label>
-						<select class="form-control" id="tujuan" name="tujuan" required>
-						<option value="" selected disabled hidden>Choose here</option>
-						@if (auth()->user()->levels=="mahasiswa")
-						<option>Surat Izin KP</option>
-						@else
-						<option>Surat Tugas</option>
-						@endif
-						<option>Surat Keterangan</option>
-						<option>Berita Acara</option>
+						<label>Jenis Surat</label>
+						<select class="form-control" id="kode_surat" name="kode_surat" required>
+							<option value="" selected disabled hidden>Choose here</option>
+							<option value="A">Surat berkaitan dengan personalia & SK</option>
+							<option value="B">Surat keterangan kegiatan mahasiswa</option>
+							<option value="C">Surat undangan, daftar hadir kegiatan</option>
+							<option value="D">Surat tugas dan DP3</option>
+							<option value="E">Berita Acara Kegiatan</option>
 						</select>
 					</div>
 					<div class="form-group">
-						<label>Nama Mitra</label>
-						<input type="text" class="form-control" id="mitra" name="mitra" required>
-					</div>
-					<div class="form-group">
-						<label>Alamat Mitra</label>
-						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required></textarea>
-					</div>
-					<div class="form-group">
-						<label>Keterangan</label>
-						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
-					</div>
-					<div class="form-group">						
-						<input type="checkbox" name="peserta[]" id="peserta" value="peserta">
-						<label>Tambah Peserta</label>
-					</div>
-					<div class="peserta" style="display: none;">
-						<label>ID</label>
-						<input type="text" class="form-control" id="id_peserta" name="id_peserta">
-						<label>Nama</label>
-						<input type="text" class="form-control" id="nama_peserta" name="nama_peserta">							
-					</div>
-					<button class="peserta" onclick="add()" style="display: none;">Add</button>					
+						<label>Tanda Tangan</label>
+						<select class="form-control" id="tanda_tangan" name="tanda_tangan" required>
+							<option value="" selected disabled hidden>Choose here</option>
+							<option>Restyandito, S.Kom., MSIS, Ph.D.</option>
+							<option>Gloria Virginia, S.Kom., MAI, Ph.D.</option>
+							<option>Drs. Jong Jek Siang, M.Sc.</option>
+							<option>Widi Hapsari, Dra., M.T.</option>
+							<option>Willy Sudiarto Raharjo, S.Kom., M.Cs.</option>
+						</select>
+					</div>				
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -424,67 +407,63 @@ table tr td:first-child::before {
 		</div>
 	</div>
 </div>
-<!-- Edit Modal HTML -->
+@endforeach
+<!-- Info Modal HTML -->
 @foreach($surat as $item)
-<div id="editSuratModal{{$item->id}}" class="modal fade">
+<div id="infoSuratModal{{$item->id}}" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form action="{{ url('updatesurat',$item->id) }}" method="post">
 			@csrf
 				<div class="modal-header">						
-					<h4 class="modal-title">Edit Record</h4>
+					<h4 class="modal-title">Detail Record</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
 				<div class="modal-body">					
 					<div class="form-group">
 					<label>Tujuan Surat</label>
-						<select class="form-control" id="tujuan" name="tujuan" required>
-						<option value="" selected disabled hidden>Choose here</option>
-						@if (auth()->user()->levels=="mahasiswa")
+						<select class="form-control" id="tujuan" name="tujuan" disabled="disabled" required>
+						<option value="" selected disabled hidden>Choose here</option>)
 						<option value="Surat Izin KP" <?php if($item->tujuan=="Surat Izin KP") echo 'selected="selected"'; ?> >Surat Izin KP</option>
-						@else
 						<option value="Surat Tugas" <?php if($item->tujuan=="Surat Tugas") echo 'selected="selected"'; ?> >Surat Tugas</option>
-						@endif
 						<option value="Surat Keterangan" <?php if($item->tujuan=="Surat Keterangan") echo 'selected="selected"'; ?> >Surat Keterangan</option>
 						<option value="Berita Acara" <?php if($item->tujuan=="Berita Acara") echo 'selected="selected"'; ?> >Berita Acara</option>
 						</select>
 					</div>
 					<div class="form-group">
 						<label>Nama Mitra</label>
-						<input type="text" class="form-control" id="mitra" name="mitra" value="{{ $item->mitra }}" required>
+						<input type="text" class="form-control" id="mitra" name="mitra" value="{{ $item->mitra }}" disabled="disabled" required>
 					</div>
 					<div class="form-group">
 						<label>Alamat Mitra</label>
-						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{ $item->alamat_mitra }}</textarea>
+						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" disabled="disabled" required>{{ $item->alamat_mitra }}</textarea>
 					</div>
 					<div class="form-group">
 						<label>Keterangan</label>
-						<textarea class="form-control" id="keterangan" name="keterangan" required>{{ $item->keterangan }}</textarea>
+						<textarea class="form-control" id="keterangan" name="keterangan" disabled="disabled" required>{{ $item->keterangan }}</textarea>
 					</div>					
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-					<input type="submit" class="btn btn-info" value="Save">
 				</div>
 			</form>
 		</div>
 	</div>
 </div>
 @endforeach
-<!-- Delete Modal HTML -->
+<!-- Tolak Modal HTML -->
 @foreach($surat as $item)
-<div id="deleteSuratModal{{$item->id}}" class="modal fade">
+<div id="tolakSuratModal{{$item->id}}" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form action="{{ url('deletesurat',$item->id) }}" method="post">
-			@method('delete')
+			<form action="{{ url('tolaksurat',$item->id) }}" method="post">
 			@csrf
 				<div class="modal-header">						
-					<h4 class="modal-title">Delete Record</h4>
+					<h4 class="modal-title">Tolak Surat</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
 				<div class="modal-body">					
-					<p>Are you sure you want to delete these Records?</p>
+					<p>Are you sure you want to reject these Records?</p>
 					<p class="text-warning"><small>This action cannot be undone.</small></p>
 				</div>
 				<div class="modal-footer">
@@ -522,14 +501,6 @@ $(document).ready(function(){
 			$("#selectAll").prop("checked", false);
 		}
 	});
-});
-$("input[value=peserta]").on( "change", function(evt) {
- if($(this).prop("checked")) {
-    $("div[class=peserta]").show() && $("button[class=peserta]").show();
-  } else{
-    $("div[class=peserta]").hide() && $("button[class=peserta]").hide();
-	$("div[class=peserta]").find(':input').val('');
-  }
 });
 </script>
 </html>

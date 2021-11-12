@@ -6,10 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
 use Auth;
-use DB;
 use RealRashid\SweetAlert\Facades\Alert;
 
-class SuratController extends Controller
+class SuratAdminController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,12 +17,10 @@ class SuratController extends Controller
      */
     public function index()
     {
-        $username = auth()->user()->username;
         $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
-            ->where([['username', $username], ['status', NULL]])
-            ->get(['surat_masuk.*', 'surat_keluar.status'])->sortByDesc('updated_at');
-        return view('surat', compact('surat'));
-        
+            ->where('status', NULL)
+            ->get(['surat_masuk.*', 'surat_keluar.status', 'surat_keluar.kode_surat', 'surat_keluar.tanda_tangan'])->sortBy('created_at');
+        return view('suratadmin', compact('surat'));
     }
 
     /**
@@ -42,21 +39,12 @@ class SuratController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        SuratMasuk::create([
-            'tujuan'=>$request->tujuan,
-            'mitra'=>$request->mitra,
-            'alamat_mitra'=>$request->alamat_mitra,
-            'keterangan'=>$request->keterangan,
-            'username'=>$request->username,
-            'nama'=>$request->name,
-            'levels'=>$request->levels
-        ]);
-        SuratKeluar::create([
-            'status'=>null
-        ]);
-        return redirect('surat')->with('toast_success', 'Record berhasil disimpan!');
+        $surat = SuratKeluar::findorfail($id);
+        $surat->update($request->all());
+        $surat->update(array('status' => 'Proses'));
+        return redirect('suratadmin')->with('toast_success', 'Record berhasil diupdate!');
     }
 
     /**
@@ -76,13 +64,9 @@ class SuratController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $id)
+    public function edit($id)
     {
-        $surat = SuratMasuk::findorfail($id);
-        $surat2 = SuratKeluar::findorfail($id);
-        $surat->update($request->all());
-        $surat2->update(array('status' => NULL));
-        return redirect('surat')->with('toast_success', 'Record berhasil diupdate!');
+        //
     }
 
     /**
@@ -94,9 +78,7 @@ class SuratController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $surat = SuratMasuk::findorfail($id);
-        $surat->update($request->all());
-        return redirect('surat')->with('toast_success', 'Record berhasil diupdate!');
+        //
     }
 
     /**
@@ -107,8 +89,8 @@ class SuratController extends Controller
      */
     public function destroy($id)
     {
-        $surat = SuratMasuk::findorfail($id);
-        $surat->delete();
-        return back()->with('toast_success', 'Record berhasil dihapus!');
+        $surat = SuratKeluar::findorfail($id);
+        $surat->update(array('status' => 'Ditolak'));
+        return redirect('suratadmin')->with('toast_success', 'Record berhasil diupdate!');
     }
 }
