@@ -37,10 +37,7 @@ Route::post('tolaksuratkeluar/{id}', [SuratKeluarController::class,'destroy'])->
 Route::post('prosessurat/{id}', [SuratAdminController::class,'store'])->name('prosessurat');
 Route::post('updatesuratkeluar/{id}', [SuratKeluarController::class,'update'])->name('updatesuratkeluar');
 Route::post('createsurat/{id}', [SuratKeluarController::class,'edit'])->name('createsurat');
-Route::get('/cetaksurat', function () {
-    return view('template_surat.surat_tugas');
-});
-
+Route::get('cetaksurat/{id}', [ArsipController::class,'cetak'])->name('cetaksurat');
 
 Route::group(['middleware' => ['auth']], function(){
     Route::get('/dashboard', function () {
