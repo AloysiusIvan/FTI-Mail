@@ -54,7 +54,7 @@ class SuratController extends Controller
             'levels'=>$request->levels
         ]);
         SuratKeluar::create([
-            'status'=>null
+            'status'=>NULL
         ]);
         return redirect('surat')->with('toast_success', 'Record berhasil disimpan!');
     }
