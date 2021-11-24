@@ -59,7 +59,7 @@ body{
                                     <div class="col-xs-7 col-sm-7 col-md-7">
                                         <div class="form-group">
                                             Nama
-                                            <input autocomplete="off" name="nama_peserta[]" type="text" placeholder="Nama Peserta" class="form-control"/>
+                                            <input type="text" placeholder="Nama Peserta" class="form-control" disabled/>
                                         </div>
                                     </div> 
  
@@ -77,6 +77,7 @@ body{
             </div>
         </div>
     </div>
+@include('sweetalert::alert');
 </body>
 <script>
 $(document).ready(function()
@@ -84,7 +85,7 @@ $(document).ready(function()
     {
 	$('.list_add_button').click(function()
 	    {
-	        var list_fieldHTML = '<div class="row"><div class="col-xs-4 col-sm-4 col-md-4"><div class="form-group"><input name="id_peserta[]" type="text" placeholder="NID/NIM Peserta" class="form-control"/></div></div><div class="col-xs-7 col-sm-7 col-md-7"><div class="form-group"><input name="nama_peserta[]" type="text" placeholder="Nama Peserta" class="form-control"/></div></div><div class="col-xs-1 col-sm-7 col-md-1"><a href="javascript:void(0);" class="list_remove_button btn btn-danger">-</a></div></div>'; //New input field html 
+	        var list_fieldHTML = '<div class="row"><div class="col-xs-4 col-sm-4 col-md-4"><div class="form-group"><input name="id_peserta[]" type="text" placeholder="NID/NIM Peserta" class="form-control"/></div></div><div class="col-xs-7 col-sm-7 col-md-7"><div class="form-group"><input disabled type="text" placeholder="Nama Peserta" class="form-control"/></div></div><div class="col-xs-1 col-sm-7 col-md-1"><a href="javascript:void(0);" class="list_remove_button btn btn-danger">-</a></div></div>'; //New input field html 
 	        $('.list_wrapper').append(list_fieldHTML);
         });
         //Once remove button is clicked

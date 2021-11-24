@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
 use App\Models\Peserta;
+use App\Models\Mahasiswa;
 use Auth;
 use DB;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -45,7 +46,7 @@ class SuratController extends Controller
      */
     public function store(Request $request)
     {
-        SuratMasuk::create([
+        $suratmasuk = SuratMasuk::create([
             'tujuan'=>$request->tujuan,
             'mitra'=>$request->mitra,
             'alamat_mitra'=>$request->alamat_mitra,
@@ -56,11 +57,13 @@ class SuratController extends Controller
             'nama'=>$request->name,
             'levels'=>$request->levels
         ]);
+        $id = $suratmasuk->id;
         SuratKeluar::create([
             'status'=>NULL
         ]);
         if ($request->peserta == 'Y' && auth()->user()->levels != 'admin' ){
-            return redirect('surat')->with('info', 'Silahkan tambah peserta di bagian Action!');
+            return $this->viewpeserta($id);
+            return view('peserta');
         } else if($request->peserta == NULL && auth()->user()->levels != 'admin' ){
             return redirect('surat')->with('toast_success', 'Record berhasil disimpan!');
         }else
@@ -112,28 +115,36 @@ class SuratController extends Controller
         $surat = SuratMasuk::findorfail($id);
         return view('peserta', compact('surat'));
     }
+
     public function addpeserta(Request $request, $id)
     {
         $surat = SuratMasuk::findorfail($id);
         $data = $request->all();
-        if (count($request->id_peserta) > 0){
-            foreach ($data['id_peserta'] as $item => $value){
-                $data2 = array(
-                    'id_surat' => $surat->id,
-                    'id_peserta' => $data['id_peserta'][$item],
-                    'nama_peserta' => $data['nama_peserta'][$item]
-                );
-                Peserta::create($data2);
+        if(Mahasiswa::where('nim', $request->id_peserta )->exists()){
+            if (count($request->id_peserta) > 0){
+                foreach ($data['id_peserta'] as $item => $value){
+                    $data2 = array(
+                        'id_surat' => $surat->id,
+                        'id_peserta' => $data['id_peserta'][$item]
+                    );
+                    Peserta::create($data2);
+                }
             }
-        }
         $surat->update(array('peserta' => 'E'));
         return redirect('surat')->with('toast_success', 'Record berhasil diupdate!');
+        } else{
+            Alert::error('NID/NIM tidak ada!', 'Silahkan periksa kembali.');
+            return redirect('surat');
+        }
     }
+
     public function viewupdatepeserta($id)
     {
         $surat = SuratMasuk::findorfail($id);
         $id_surat = $surat->id;
-        $peserta = Peserta::where('id_surat', $id_surat)->get();
+        $peserta = Peserta::join('mahasiswa', 'peserta.id_peserta', '=', 'mahasiswa.nim')
+            ->where('id_surat', $id_surat)
+            ->get(['peserta.*', 'mahasiswa.nama']);
         return view('updatepeserta', compact('peserta'));
     }
 

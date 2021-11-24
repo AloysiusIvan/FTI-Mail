@@ -295,7 +295,7 @@ table tr td:first-child::before {
 					<tr>
                         <td></td>
 						<td scope="row">{{ $item->id_peserta }}</td>
-						<td scope="row">{{ $item->nama_peserta }}</td>
+						<td scope="row">{{ $item->nama }}</td>
 					</tr>
                     @endforeach
 				</tbody>
