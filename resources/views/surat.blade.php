@@ -118,6 +118,9 @@ table.table td a.edit {
 table.table td a.delete {
 	color: #F44336;
 }
+table.table td a.peserta {
+	color: #0d6efd;
+}
 table.table td i {
 	font-size: 19px;
 }
@@ -332,7 +335,7 @@ table tr td:first-child::before {
 						<th>Mitra</th>
 						<th>Alamat Mitra</th>
 						<th>Keterangan</th>
-						<th>Actions</th>
+						<th style="width:135px; text-align:center;">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -344,8 +347,18 @@ table tr td:first-child::before {
 						<td>{{ $item-> alamat_mitra }}</td>
 						<td>{{ $item-> keterangan }}</td>
 						<td>
+							@if ($item->peserta == "Y")
 							<a href="#editSuratModal" class="edit" data-toggle="modal" data-target="#editSuratModal{{$item->id}}"><i class="bi bi-pencil-fill"></i></a>
 							<a href="#deleteSuratModal" class="delete" data-toggle="modal" data-target="#deleteSuratModal{{$item->id}}"><i class="bi bi-trash-fill"></i></a>
+							<a href="/viewpeserta/{{$item->id}}" class="peserta"><i class="bi bi-person-plus-fill"></i></a>
+							@elseif ($item->peserta == "E")
+							<a href="#editSuratModal" class="edit" data-toggle="modal" data-target="#editSuratModal{{$item->id}}"><i class="bi bi-pencil-fill"></i></a>
+							<a href="#deleteSuratModal" class="delete" data-toggle="modal" data-target="#deleteSuratModal{{$item->id}}"><i class="bi bi-trash-fill"></i></a>
+							<a href="/viewupdatepeserta/{{$item->id}}"><i class="bi bi-person-lines-fill"></i></a>
+							@else
+							<a href="#editSuratModal" class="edit" data-toggle="modal" data-target="#editSuratModal{{$item->id}}"><i class="bi bi-pencil-fill"></i></a>
+							<a href="#deleteSuratModal" class="delete" data-toggle="modal" data-target="#deleteSuratModal{{$item->id}}"><i class="bi bi-trash-fill"></i></a>
+							@endif
 						</td>
 					</tr>
 					@endforeach
@@ -385,17 +398,21 @@ table tr td:first-child::before {
 						<select class="form-control" id="tujuan" name="tujuan" required>
 						<option value="" selected disabled hidden>Choose here</option>
 						@if (auth()->user()->levels=="mahasiswa")
-						<option>Surat Izin KP</option>
+						<option value="Surat Izi KP">Surat Izin KP</option>
 						@else
-						<option>Surat Tugas</option>
+						<option value="Surat Tugas">Surat Tugas</option>
 						@endif
-						<option>Surat Keterangan</option>
-						<option>Berita Acara</option>
+						<option value="Surat Keterangan">Surat Keterangan</option>
+						<option value="Berita Acara">Berita Acara</option>
 						</select>
 					</div>
 					<div class="form-group">
 						<label>Nama Mitra</label>
 						<input type="text" class="form-control" id="mitra" name="mitra" required>
+					</div>
+					<div id="tgl" class="form-group" style="display:none;">
+						<label>Tanggal Kegiatan</label>
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan">
 					</div>
 					<div class="form-group">
 						<label>Alamat Mitra</label>
@@ -405,17 +422,10 @@ table tr td:first-child::before {
 						<label>Keterangan</label>
 						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
 					</div>
-					<div class="form-group">						
-						<input type="checkbox" name="peserta[]" id="peserta" value="peserta">
-						<label>Tambah Peserta</label>
-					</div>
-					<div class="peserta" style="display: none;">
-						<label>ID</label>
-						<input type="text" class="form-control" id="id_peserta" name="id_peserta">
-						<label>Nama</label>
-						<input type="text" class="form-control" id="nama_peserta" name="nama_peserta">							
-					</div>
-					<button class="peserta" onclick="add()" style="display: none;">Add</button>					
+					<div class="form-group">
+						<input type="checkbox" name="peserta" value="Y">
+						<label>Tambah peserta/rekan</label>
+					</div>	
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -454,6 +464,12 @@ table tr td:first-child::before {
 						<label>Nama Mitra</label>
 						<input type="text" class="form-control" id="mitra" name="mitra" value="{{ $item->mitra }}" required>
 					</div>
+					@if ($item->tgl_kegiatan != NULL)
+					<div id="tgl" class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value="{{$item->tgl_kegiatan}}">
+					</div>
+					@endif
 					<div class="form-group">
 						<label>Alamat Mitra</label>
 						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{ $item->alamat_mitra }}</textarea>
@@ -501,36 +517,21 @@ table tr td:first-child::before {
 @include('sweetalert::alert');
 </body>
 <script>
-$(document).ready(function(){
-	// Activate tooltip
-	$('[data-toggle="tooltip"]').tooltip();
-	
-	// Select/Deselect checkboxes
-	var checkbox = $('table tbody input[type="checkbox"]');
-	$("#selectAll").click(function(){
-		if(this.checked){
-			checkbox.each(function(){
-				this.checked = true;                        
-			});
-		} else{
-			checkbox.each(function(){
-				this.checked = false;                        
-			});
-		} 
-	});
-	checkbox.click(function(){
-		if(!this.checked){
-			$("#selectAll").prop("checked", false);
+	$('#tujuan').on('change',function(){
+		var selection = $(this).val();
+		switch(selection){
+		case "Berita Acara":
+		$("#tgl").show()
+		break;
+		case "Surat Tugas":
+		$("#tgl").show()
+		break;
+		case "Surat Izin KP":
+		$("#tgl").show()
+		break;
+		default:
+		$("#tgl").hide()
 		}
 	});
-});
-$("input[value=peserta]").on( "change", function(evt) {
- if($(this).prop("checked")) {
-    $("div[class=peserta]").show() && $("button[class=peserta]").show();
-  } else{
-    $("div[class=peserta]").hide() && $("button[class=peserta]").hide();
-	$("div[class=peserta]").find(':input').val('');
-  }
-});
 </script>
 </html>

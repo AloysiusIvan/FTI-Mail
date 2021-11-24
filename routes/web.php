@@ -38,6 +38,9 @@ Route::post('prosessurat/{id}', [SuratAdminController::class,'store'])->name('pr
 Route::post('updatesuratkeluar/{id}', [SuratKeluarController::class,'update'])->name('updatesuratkeluar');
 Route::post('createsurat/{id}', [SuratKeluarController::class,'edit'])->name('createsurat');
 Route::get('cetaksurat/{id}', [ArsipController::class,'cetak'])->name('cetaksurat');
+Route::get('viewpeserta/{id}', [SuratController::class,'viewpeserta'])->name('viewpeserta');
+Route::post('addpeserta/{id}', [SuratController::class,'addpeserta'])->name('addpeserta');
+Route::get('viewupdatepeserta/{id}', [SuratController::class,'viewupdatepeserta'])->name('viewupdatepeserta');
 
 Route::group(['middleware' => ['auth']], function(){
     Route::get('/dashboard', function () {

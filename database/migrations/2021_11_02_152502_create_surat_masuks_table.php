@@ -19,6 +19,10 @@ class CreateSuratMasuksTable extends Migration
             $table->string('mitra');
             $table->string('alamat_mitra');
             $table->string('keterangan');
+            $table->string('peserta')->nullable();
+            $table->json('id_peserta')->nullable();
+            $table->json('nama_peserta')->nullable();
+            $table->date('tgl_kegiatan')->nullable();
             $table->integer('username');
             $table->string('nama');
             $table->string('levels');

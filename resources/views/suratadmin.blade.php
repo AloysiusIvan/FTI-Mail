@@ -317,8 +317,7 @@ table tr td:first-child::before {
 					<div class="col-sm-6">
 					</div>
 					<div class="col-sm-6">
-						<a href="#addSuratModal" class="btn btn-success" data-toggle="modal">Dosen</a>
-						<a href="#addSuratModal" class="btn btn-success" data-toggle="modal">Mahasiswa</a>											
+						<a href="#addSuratModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i>On The Spot</a>
 					</div>
 				</div>
 			</div>
@@ -362,6 +361,68 @@ table tr td:first-child::before {
 					<li class="page-item"><a href="#" class="page-link">Next</a></li>
 				</ul>
 			</div>
+		</div>
+	</div>
+</div>
+<!-- Add Modal HTML -->
+<div id="addSuratModal" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="/addsurat" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+						<label>Tujuan Surat</label>
+						<select class="form-control" id="tujuan" name="tujuan" required>
+						<option value="" selected disabled hidden>Choose here</option>
+						<option>Surat Izin KP</option>
+						<option>Surat Tugas</option>
+						<option>Surat Keterangan</option>
+						<option>Berita Acara</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>NIM / NIK</label>
+						<input type="text" class="form-control" id="username" name="username" required>
+					</div>
+					<div class="form-group">
+						<label>Nama</label>
+						<input type="text" class="form-control" id="name" name="name" required>
+					</div>
+					<div class="form-group">
+						<label>Peran</label>
+						<select class="form-control" id="levels" name="levels" required>
+						<option value="" selected disabled hidden>Choose here</option>
+						<option value="dosen">Dosen</option>
+						<option value="mahasiswa">Mahasiswa</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Nama Mitra</label>
+						<input type="text" class="form-control" id="mitra" name="mitra" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat Mitra</label>
+						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required></textarea>
+					</div>
+					<div class="form-group">
+						<label>Keterangan</label>
+						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" name="peserta" value="Y">
+						<label>Tambah peserta/rekan</label>
+					</div>	
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="submit" class="btn btn-success" value="Add">
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
