@@ -398,7 +398,7 @@ table tr td:first-child::before {
 						<select class="form-control" id="tujuan" name="tujuan" required>
 						<option value="" selected disabled hidden>Choose here</option>
 						@if (auth()->user()->levels=="mahasiswa")
-						<option value="Surat Izi KP">Surat Izin KP</option>
+						<option value="Surat Izin KP">Surat Izin KP</option>
 						@else
 						<option value="Surat Tugas">Surat Tugas</option>
 						@endif
