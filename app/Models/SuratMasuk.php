@@ -15,4 +15,6 @@ class SuratMasuk extends Model
     protected $casts = [
         'id_peserta' => 'array', 'nama_peserta' => 'array'
     ];
+
+    protected $dates = ['tgl_kegiatan'];
 }

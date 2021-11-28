@@ -41,6 +41,7 @@ Route::get('cetaksurat/{id}', [ArsipController::class,'cetak'])->name('cetaksura
 Route::get('viewpeserta/{id}', [SuratController::class,'viewpeserta'])->name('viewpeserta');
 Route::post('addpeserta/{id}', [SuratController::class,'addpeserta'])->name('addpeserta');
 Route::get('viewupdatepeserta/{id}', [SuratController::class,'viewupdatepeserta'])->name('viewupdatepeserta');
+Route::post('/addsuratadmin', [SuratController::class,'storeadmin'])->name('addsuratadmin');
 
 Route::group(['middleware' => ['auth']], function(){
     Route::get('/dashboard', function () {

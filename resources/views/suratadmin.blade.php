@@ -368,7 +368,7 @@ table tr td:first-child::before {
 <div id="addSuratModal" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form action="/addsurat" method="post">
+			<form action="/addsuratadmin" method="post">
 			{{ csrf_field() }}
 				<div class="modal-header">						
 					<h4 class="modal-title">Add New</h4>
@@ -388,18 +388,6 @@ table tr td:first-child::before {
 					<div class="form-group">
 						<label>NIM / NIK</label>
 						<input type="text" class="form-control" id="username" name="username" required>
-					</div>
-					<div class="form-group">
-						<label>Nama</label>
-						<input type="text" class="form-control" id="name" name="name" required>
-					</div>
-					<div class="form-group">
-						<label>Peran</label>
-						<select class="form-control" id="levels" name="levels" required>
-						<option value="" selected disabled hidden>Choose here</option>
-						<option value="dosen">Dosen</option>
-						<option value="mahasiswa">Mahasiswa</option>
-						</select>
 					</div>
 					<div class="form-group">
 						<label>Nama Mitra</label>

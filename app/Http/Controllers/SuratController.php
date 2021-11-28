@@ -7,6 +7,7 @@ use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
 use App\Models\Peserta;
 use App\Models\Mahasiswa;
+use App\Models\Dosen;
 use Auth;
 use DB;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -57,6 +58,49 @@ class SuratController extends Controller
             'nama'=>$request->name,
             'levels'=>$request->levels
         ]);
+        $id = $suratmasuk->id;
+        SuratKeluar::create([
+            'status'=>NULL
+        ]);
+        if ($request->peserta == 'Y' && auth()->user()->levels != 'admin' ){
+            return $this->viewpeserta($id);
+            return view('peserta');
+        } else if($request->peserta == NULL && auth()->user()->levels != 'admin' ){
+            return redirect('surat')->with('toast_success', 'Record berhasil disimpan!');
+        }else
+            return redirect('suratadmin')->with('toast_success', 'Record berhasil disimpan!');
+    }
+
+    public function storeadmin(Request $request)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $request->username)->get();
+        $dosen = Dosen::where('nid', $request->username)->get();
+        $md = substr($request->username, 0, -6);
+        if ($md == "72"){
+            $suratmasuk = SuratMasuk::create([
+                'tujuan'=>$request->tujuan,
+                'mitra'=>$request->mitra,
+                'alamat_mitra'=>$request->alamat_mitra,
+                'keterangan'=>$request->keterangan,
+                'peserta'=>$request->peserta,
+                'tgl_kegiatan'=>$request->tgl_kegiatan,
+                'username'=>$request->username,
+                'nama'=>$mahasiswa[0]->nama,
+                'levels'=>'mahasiswa'
+            ]);
+        } else {
+            $suratmasuk = SuratMasuk::create([
+                'tujuan'=>$request->tujuan,
+                'mitra'=>$request->mitra,
+                'alamat_mitra'=>$request->alamat_mitra,
+                'keterangan'=>$request->keterangan,
+                'peserta'=>$request->peserta,
+                'tgl_kegiatan'=>$request->tgl_kegiatan,
+                'username'=>$request->username,
+                'nama'=>$dosen[0]->nama,
+                'levels'=>'dosen'
+            ]);
+        }
         $id = $suratmasuk->id;
         SuratKeluar::create([
             'status'=>NULL
