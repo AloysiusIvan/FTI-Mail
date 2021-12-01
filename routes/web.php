@@ -7,6 +7,7 @@ use App\Http\Controllers\SuratController;
 use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\SuratAdminController;
 use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +45,7 @@ Route::get('viewupdatepeserta/{id}', [SuratController::class,'viewupdatepeserta'
 Route::post('/addsuratadmin', [SuratController::class,'storeadmin'])->name('addsuratadmin');
 
 Route::group(['middleware' => ['auth']], function(){
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    });
+    Route::get('dashboard', [DashboardController::class,'index'])->name('dashboard');
     Route::get('/arsip', [ArsipController::class,'index'])->name('arsip');
     Route::get('/surat', [SuratController::class,'index'])->name('surat');
     Route::get('/suratadmin', [SuratAdminController::class,'index'])->name('suratadmin');

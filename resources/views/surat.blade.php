@@ -379,8 +379,41 @@ table tr td:first-child::before {
 		</div>
 	</div>
 </div>
-<!-- Add Modal HTML -->
+<!-- Add Modal HTML BASE -->
 <div id="addSuratModal" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form>
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+					@if (auth()->user()->levels=="mahasiswa")
+					<a href="#addSuratModalkp" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Izin KP</a>
+					@else
+					<a href="#addSuratModalsurattugas" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Tugas</a>
+					@endif
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+					<a href="#addSuratModa2l" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Keterangan</a>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+					<a href="#addSuratModalberitaacara" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Berita Acara</a>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- Add Modal HTML SURAT TUGAS -->
+<div id="addSuratModalsurattugas" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form action="/addsurat" method="post">
@@ -394,25 +427,15 @@ table tr td:first-child::before {
 						<input type="hidden" id="username" name="username" value="{{auth()->user()->username}}">
 						<input type="hidden" id="name" name="name" value="{{auth()->user()->name}}">
 						<input type="hidden" id="levels" name="levels" value="{{auth()->user()->levels}}">
-						<label>Tujuan Surat</label>
-						<select class="form-control" id="tujuan" name="tujuan" required>
-						<option value="" selected disabled hidden>Choose here</option>
-						@if (auth()->user()->levels=="mahasiswa")
-						<option value="Surat Izin KP">Surat Izin KP</option>
-						@else
-						<option value="Surat Tugas">Surat Tugas</option>
-						@endif
-						<option value="Surat Keterangan">Surat Keterangan</option>
-						<option value="Berita Acara">Berita Acara</option>
-						</select>
+						<input type="hidden" id="tujuan" name="tujuan" value="Surat Tugas">
 					</div>
 					<div class="form-group">
 						<label>Nama Mitra</label>
 						<input type="text" class="form-control" id="mitra" name="mitra" required>
 					</div>
-					<div id="tgl" class="form-group" style="display:none;">
+					<div class="form-group">
 						<label>Tanggal Kegiatan</label>
-						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan">
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" required>
 					</div>
 					<div class="form-group">
 						<label>Alamat Mitra</label>
@@ -422,10 +445,130 @@ table tr td:first-child::before {
 						<label>Keterangan</label>
 						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
 					</div>
-					<div class="form-group">
+					<div id="peserta" class="form-group">
 						<input type="checkbox" name="peserta" value="Y">
 						<label>Tambah peserta/rekan</label>
-					</div>	
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="submit" class="btn btn-success" value="Add">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- Add Modal HTML SURAT KP -->
+<div id="addSuratModalkp" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="/addsurat" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+						<input type="hidden" id="username" name="username" value="{{auth()->user()->username}}">
+						<input type="hidden" id="name" name="name" value="{{auth()->user()->name}}">
+						<input type="hidden" id="levels" name="levels" value="{{auth()->user()->levels}}">
+						<input type="hidden" id="tujuan" name="tujuan" value="Surat Izin KP">
+					</div>
+					<div class="form-group">
+						<label>No. Telepon Mahasiswa</label>
+						<input type="number" class="form-control" id="telp_pembuat" name="telp_pembuat" required>
+					</div>
+					<div class="form-group">
+						<label>Email Mahasiswa</label>
+						<input type="email" class="form-control" id="email_pembuat" name="email_pembuat" required>
+					</div>
+					<div class="form-group">
+						<label>Nama Perusahaan</label>
+						<input type="text" class="form-control" id="mitra" name="mitra" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat Perusahaan</label>
+						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required></textarea>
+					</div>
+					<div class="form-group">
+						<label>No. Telepon Perusahaan</label>
+						<input type="number" class="form-control" id="tlp_mitra" name="tlp_mitra" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Mulai</label>
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Selesai</label>
+						<input type="date" class="form-control" id="tgl_selesai" name="tgl_selesai" required>
+					</div>
+					<div class="form-group">
+						<label>Deskripsi Pekerjaan</label>
+						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
+					</div>
+					<div id="peserta" class="form-group">
+						<input type="checkbox" name="peserta" value="Y">
+						<label>Tambah peserta/rekan</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="submit" class="btn btn-success" value="Add">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- Add Modal HTML BERITA ACARA -->
+<div id="addSuratModalberitaacara" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="/addsurat" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+						<input type="hidden" id="username" name="username" value="{{auth()->user()->username}}">
+						<input type="hidden" id="name" name="name" value="{{auth()->user()->name}}">
+						<input type="hidden" id="levels" name="levels" value="{{auth()->user()->levels}}">
+						<input type="hidden" id="tujuan" name="tujuan" value="Berita Acara">
+					</div>
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat Pelaksanaan</label>
+						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
+					</div>
+					<div class="form-group">
+						<label>Nama Kegiatan</label>
+						<input type="text" class="form-control" id="nama_kegiatan" name="nama_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Tema Kegiatan</label>
+						<input type="text" class="form-control" id="tema_kegiatan" name="tema_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Pembicara / Tamu</label>
+						<input type="text" class="form-control" id="pembicara_tamu" name="pembicara_tamu" required>
+					</div>
+					<div class="form-group">
+						<label>Nama Mitra</label>
+						<input type="text" class="form-control" id="mitra" name="mitra" required>
+					</div>
+					<div class="form-group">
+						<label>Diikuti Oleh</label>
+						<textarea class="form-control" id="diikuti" name="diikuti" required></textarea>
+					</div>
+					<div id="peserta" class="form-group">
+						<input type="checkbox" name="peserta" value="Y">
+						<label>Tambah peserta/rekan</label>
+					</div>
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -521,16 +664,21 @@ table tr td:first-child::before {
 		var selection = $(this).val();
 		switch(selection){
 		case "Berita Acara":
-		$("#tgl").show()
+		$("#surat_tugas").hide()
+		break;
+		case "Surat Keterangan":
+		$("#surat_tugas").hide()
 		break;
 		case "Surat Tugas":
-		$("#tgl").show()
+		$("#surat_tugas").show()
+		$("#peserta").show()
 		break;
 		case "Surat Izin KP":
-		$("#tgl").show()
+		$("#surat_tugas").hide()
 		break;
 		default:
-		$("#tgl").hide()
+		$("#surat_tugas").hide()
+		$("#peserta").hide()
 		}
 	});
 </script>

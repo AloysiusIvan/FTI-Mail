@@ -139,11 +139,7 @@
           '2021'
         ],
         datasets: [{
-          data: [
-            1,
-            2,
-            4
-          ],
+          data: [{{$surat_count_19}},{{$surat_count_20}},{{$surat_count_21}}],
           lineTension: 0,
           backgroundColor: 'transparent',
           borderColor: '#007bff',
@@ -172,9 +168,9 @@
     var myPieChart = new Chart(ctxP, {
       type: 'pie',
       data: {
-        labels: ["A", "B", "C"],
+        labels: ["A", "B", "C", "D", "E"],
         datasets: [{
-          data: [4,2,1],
+          data: [{{$surat_A}},{{$surat_B}},{{$surat_C}},{{$surat_D}},{{$surat_E}}],
           backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
           hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
         }]

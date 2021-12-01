@@ -47,6 +47,7 @@ class SuratController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->tujuan == "Surat Tugas"){
         $suratmasuk = SuratMasuk::create([
             'tujuan'=>$request->tujuan,
             'mitra'=>$request->mitra,
@@ -61,7 +62,49 @@ class SuratController extends Controller
         $id = $suratmasuk->id;
         SuratKeluar::create([
             'status'=>NULL
-        ]);
+        ]);} elseif ($request->tujuan == "Berita Acara"){
+            $suratmasuk = SuratMasuk::create([
+                'tujuan'=>$request->tujuan,
+                'tgl_kegiatan'=>$request->tgl_kegiatan,
+                'keterangan'=>$request->keterangan,
+                'nama_kegiatan'=>$request->nama_kegiatan,
+                'tema_kegiatan'=>$request->tema_kegiatan,
+                'pembicara_tamu'=>$request->pembicara_tamu,
+                'mitra'=>$request->mitra,
+                'diikuti'=>$request->diikuti,
+                'alamat_mitra'=>"ANJAY",
+                'peserta'=>$request->peserta,
+                'username'=>$request->username,
+                'nama'=>$request->name,
+                'levels'=>$request->levels
+            ]);
+            $id = $suratmasuk->id;
+            SuratKeluar::create([
+                'status'=>NULL
+            ]);
+        } elseif ($request->tujuan == "Surat Izin KP"){
+            $suratmasuk = SuratMasuk::create([
+                'tujuan'=>$request->tujuan,
+                'telp_pembuat'=>$request->telp_pembuat,
+                'email_pembuat'=>$request->email_pembuat,
+                'mitra'=>$request->mitra,
+                'alamat_mitra'=>$request->alamat_mitra,
+                'tlp_mitra'=>$request->tlp_mitra,
+                'tgl_kegiatan'=>$request->tgl_kegiatan,
+                'tgl_selesai'=>$request->tgl_selesai,
+                'keterangan'=>$request->keterangan,
+                'peserta'=>$request->peserta,
+                'username'=>$request->username,
+                'nama'=>$request->name,
+                'levels'=>$request->levels
+            ]);
+            $id = $suratmasuk->id;
+            SuratKeluar::create([
+                'status'=>NULL
+            ]);
+        } else{
+
+        }
         if ($request->peserta == 'Y' && auth()->user()->levels != 'admin' ){
             return $this->viewpeserta($id);
             return view('peserta');
