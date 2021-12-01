@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
+use App\Models\Peserta;
 use RealRashid\SweetAlert\Facades\Alert;
 use PDF;
 
@@ -70,17 +71,27 @@ class ArsipController extends Controller
         $id = auth()->user()->username;
         $tujuan = $surat[0]->tujuan;
         if ($tujuan == "Surat Tugas"){
+            $peserta = $surat[0]->peserta;
+            if ($peserta == "E"){
+                $id_surat = $surat[0]->id;
+                $peserta = Peserta::join('mahasiswa', 'peserta.id_peserta', '=', 'mahasiswa.nim')
+                    ->where('id_surat', $id_surat)
+                    ->get(['peserta.*', 'mahasiswa.nama']);
+                $pdfin = PDF::loadView('template_surat.surat_tugas_peserta', compact('surat', 'peserta'));
+                $pdfin->setPaper('A4', 'portrait');
+                return $pdfin->stream('surat_tugas_'.$id.'.pdf');
+            }
             $pdfin = PDF::loadView('template_surat.surat_tugas', compact('surat'));
             $pdfin->setPaper('A4', 'portrait');
             return $pdfin->stream('surat_tugas_'.$id.'.pdf');
         } elseif($tujuan == "Surat Izin KP"){
             $pdfin = PDF::loadView('template_surat.surat_kp', compact('surat'));
             $pdfin->setPaper('A4', 'portrait');
-            return $pdfin->stream('surat_izin_kp.pdf');
+            return $pdfin->stream('surat_izin_kp_'.$id.'.pdf');
         } elseif($tujuan == "Berita Acara"){
             $pdfin = PDF::loadView('template_surat.berita_acara', compact('surat'));
             $pdfin->setPaper('A4', 'portrait');
-            return $pdfin->stream('berita_acara.pdf');
+            return $pdfin->stream('berita_acara_'.$id.'.pdf');
         } elseif($tujuan == "Surat Keterangan"){
             $pdfin = PDF::loadView('template_surat.surat_keterangan', compact('surat'));
             $pdfin->setPaper('A4', 'portrait');
