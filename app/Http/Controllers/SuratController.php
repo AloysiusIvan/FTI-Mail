@@ -59,28 +59,21 @@ class SuratController extends Controller
             'nama'=>$request->name,
             'levels'=>$request->levels
         ]);
-        $id = $suratmasuk->id;
-        SuratKeluar::create([
-            'status'=>NULL
-        ]);} elseif ($request->tujuan == "Berita Acara"){
+        } elseif ($request->tujuan == "Berita Acara"){
             $suratmasuk = SuratMasuk::create([
                 'tujuan'=>$request->tujuan,
                 'tgl_kegiatan'=>$request->tgl_kegiatan,
-                'keterangan'=>$request->keterangan,
+                'keterangan'=>$request->nama_kegiatan,
                 'nama_kegiatan'=>$request->nama_kegiatan,
                 'tema_kegiatan'=>$request->tema_kegiatan,
                 'pembicara_tamu'=>$request->pembicara_tamu,
                 'mitra'=>$request->mitra,
                 'diikuti'=>$request->diikuti,
-                'alamat_mitra'=>"ANJAY",
+                'alamat_mitra'=>$request->alamat_mitra,
                 'peserta'=>$request->peserta,
                 'username'=>$request->username,
                 'nama'=>$request->name,
                 'levels'=>$request->levels
-            ]);
-            $id = $suratmasuk->id;
-            SuratKeluar::create([
-                'status'=>NULL
             ]);
         } elseif ($request->tujuan == "Surat Izin KP"){
             $suratmasuk = SuratMasuk::create([
@@ -98,13 +91,21 @@ class SuratController extends Controller
                 'nama'=>$request->name,
                 'levels'=>$request->levels
             ]);
-            $id = $suratmasuk->id;
-            SuratKeluar::create([
-                'status'=>NULL
+        } elseif ($request->tujuan == "Surat Keterangan Aktif"){
+            $suratmasuk = SuratMasuk::create([
+                'tujuan'=>$request->tujuan,
+                'mitra'=>$request->name,
+                'alamat_mitra'=>$request->alamat_mitra,
+                'keterangan'=>$request->keterangan,
+                'tpt_lahir'=>$request->tpt_lahir,
+                'tgl_kegiatan'=>$request->tgl_kegiatan,
+                'username'=>$request->username,
+                'nama'=>$request->name,
+                'levels'=>$request->levels
             ]);
-        } else{
-
         }
+        $id = $suratmasuk->id;
+        SuratKeluar::create(['status'=>NULL]);
         if ($request->peserta == 'Y' && auth()->user()->levels != 'admin' ){
             return $this->viewpeserta($id);
             return view('peserta');
@@ -132,7 +133,8 @@ class SuratController extends Controller
                 'levels'=>'mahasiswa'
             ]);
         } else {
-            $suratmasuk = SuratMasuk::create([
+            if ($request->tujuan == "Surat Tugas"){
+                $suratmasuk = SuratMasuk::create([
                 'tujuan'=>$request->tujuan,
                 'mitra'=>$request->mitra,
                 'alamat_mitra'=>$request->alamat_mitra,
@@ -142,12 +144,10 @@ class SuratController extends Controller
                 'username'=>$request->username,
                 'nama'=>$dosen[0]->nama,
                 'levels'=>'dosen'
-            ]);
-        }
+            ]);}
         $id = $suratmasuk->id;
-        SuratKeluar::create([
-            'status'=>NULL
-        ]);
+        SuratKeluar::create(['status'=>NULL]); 
+        }
         if ($request->peserta == 'Y' && auth()->user()->levels != 'admin' ){
             return $this->viewpeserta($id);
             return view('peserta');

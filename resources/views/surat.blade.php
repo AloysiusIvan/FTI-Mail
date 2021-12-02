@@ -398,7 +398,7 @@ table tr td:first-child::before {
 					</div>
 					<hr class="mt-2 mb-3"/>
 					<div class="form-group">
-					<a href="#addSuratModa2l" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Keterangan</a>
+					<a href="#addSuratModalsk" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Keterangan Aktif</a>
 					</div>
 					<hr class="mt-2 mb-3"/>
 					<div class="form-group">
@@ -543,7 +543,7 @@ table tr td:first-child::before {
 					</div>
 					<div class="form-group">
 						<label>Tempat Pelaksanaan</label>
-						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
+						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required></textarea>
 					</div>
 					<div class="form-group">
 						<label>Nama Kegiatan</label>
@@ -568,6 +568,48 @@ table tr td:first-child::before {
 					<div id="peserta" class="form-group">
 						<input type="checkbox" name="peserta" value="Y">
 						<label>Tambah peserta/rekan</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="submit" class="btn btn-success" value="Add">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- Add Modal HTML SURAT KETARANGAN AKTIF KULIAH -->
+<div id="addSuratModalsk" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="/addsurat" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+						<input type="hidden" id="username" name="username" value="{{auth()->user()->username}}">
+						<input type="hidden" id="name" name="name" value="{{auth()->user()->name}}">
+						<input type="hidden" id="levels" name="levels" value="{{auth()->user()->levels}}">
+						<input type="hidden" id="tujuan" name="tujuan" value="Surat Keterangan Aktif">
+					</div>
+					<div class="form-group">
+						<label>Keperluan</label>
+						<input type="text" class="form-control" id="keterangan" name="keterangan" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat lahir</label>
+						<input type="text" class="form-control" id="tpt_lahir" name="tpt_lahir" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Lahir</label>
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat</label>
+						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required></textarea>
 					</div>
 				</div>
 				<div class="modal-footer">

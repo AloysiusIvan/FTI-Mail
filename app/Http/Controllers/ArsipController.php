@@ -19,10 +19,18 @@ class ArsipController extends Controller
     public function index()
     {
         $username = auth()->user()->username;
-        $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
-            ->where([['username', $username], ['status', '!=', NULL]])
-            ->get(['surat_masuk.*', 'surat_keluar.status'])->sortByDesc('updated_at');
-        return view('arsip', compact('surat'));
+        $level = auth()->user()->levels;
+        if ($level != "admin"){
+            $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
+                ->where([['username', $username], ['status', '!=', NULL]])
+                ->get(['surat_masuk.*', 'surat_keluar.status'])->sortByDesc('updated_at');
+            return view('arsip', compact('surat'));
+        } else{
+            $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
+                ->where('status', 'Selesai')
+                ->get(['surat_masuk.*', 'surat_keluar.kode_surat'])->sortByDesc('updated_at');
+            return view('arsipadmin', compact('surat'));
+        }
     }
 
     /**
@@ -92,10 +100,18 @@ class ArsipController extends Controller
             $pdfin = PDF::loadView('template_surat.berita_acara', compact('surat'));
             $pdfin->setPaper('A4', 'portrait');
             return $pdfin->stream('berita_acara_'.$id.'.pdf');
-        } elseif($tujuan == "Surat Keterangan"){
-            $pdfin = PDF::loadView('template_surat.surat_keterangan', compact('surat'));
+        } elseif($tujuan == "Surat Keterangan Aktif"){
+            $year = substr($surat[0]->username, 2, -4);
+            $prod = substr($surat[0]->username, 0, -6);
+            if($year == "19"){
+                $tahun = "2019/2020";
+            }
+            if($prod == "72"){
+                $prodi = "Sistem Informasi";
+            }
+            $pdfin = PDF::loadView('template_surat.surat_keterangan_aktif', compact('surat', 'tahun', 'prodi'));
             $pdfin->setPaper('A4', 'portrait');
-            return $pdfin->stream('surat_keterangan.pdf');
+            return $pdfin->stream('surat_keterangan_'.$id.'.pdf');
         }
     }
 
