@@ -103,6 +103,22 @@ class SuratController extends Controller
                 'nama'=>$request->name,
                 'levels'=>$request->levels
             ]);
+        } else{
+            $suratmasuk = SuratMasuk::create([
+                'tujuan'=>$request->tujuan,
+                'mitra'=>$request->mitra,
+                'alamat_mitra'=>$request->alamat_mitra,
+                'keterangan'=>$request->keterangan,
+                'pembicara_tamu'=>$request->pembicara_tamu,
+                'jabatan'=>$request->jabatan,
+                'tema_kegiatan'=>$request->tema_kegiatan,
+                'nama_kegiatan'=>$request->nama_kegiatan,
+                'tgl_kegiatan'=>$request->tgl_kegiatan,
+                'waktu'=>$request->waktu,
+                'username'=>$request->username,
+                'nama'=>$request->name,
+                'levels'=>$request->levels
+            ]);
         }
         $id = $suratmasuk->id;
         SuratKeluar::create(['status'=>NULL]);

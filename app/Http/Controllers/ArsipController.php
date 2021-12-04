@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
 use App\Models\Peserta;
+use App\Models\Dosen;
 use RealRashid\SweetAlert\Facades\Alert;
 use PDF;
 
@@ -78,6 +79,7 @@ class ArsipController extends Controller
             ->get(['surat_masuk.*', 'status', 'kode_surat', 'tanda_tangan']);
         $id = auth()->user()->username;
         $tujuan = $surat[0]->tujuan;
+        $mitra = $surat[0]->mitra;
         if ($tujuan == "Surat Tugas"){
             $peserta = $surat[0]->peserta;
             if ($peserta == "E"){
@@ -109,9 +111,21 @@ class ArsipController extends Controller
             if($prod == "72"){
                 $prodi = "Sistem Informasi";
             }
-            $pdfin = PDF::loadView('template_surat.surat_keterangan_aktif', compact('surat', 'tahun', 'prodi'));
+            if ($surat[0]->username == "72"){
+                $pdfin = PDF::loadView('template_surat.surat_keterangan_aktif', compact('surat', 'tahun', 'prodi'));
+                $pdfin->setPaper('A4', 'portrait');
+                return $pdfin->stream('surat_keterangan_'.$id.'.pdf');
+            }else{
+                $dosen = Dosen::where('nid', $surat[0]->username)->get('jabatan');
+                $masuk = Dosen::where('nid', $surat[0]->username)->get('tgl_masuk');
+                $pdfin = PDF::loadView('template_surat.surat_aktif_dosen', compact('surat', 'dosen', 'masuk'));
+                $pdfin->setPaper('A4', 'portrait');
+                return $pdfin->stream('surat_keterangan_'.$id.'.pdf');
+            }
+        } elseif ($tujuan == "Surat Undangan"){
+            $pdfin = PDF::loadView('template_surat.surat_undangan', compact('surat'));
             $pdfin->setPaper('A4', 'portrait');
-            return $pdfin->stream('surat_keterangan_'.$id.'.pdf');
+            return $pdfin->stream('surat_undangan_'.$mitra.'.pdf');
         }
     }
 

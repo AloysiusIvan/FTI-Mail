@@ -9,4 +9,5 @@ class Dosen extends Model
 {
     protected $table = "dosen";
     protected $primaryKey = "nid";
+    protected $dates = ['tgl_masuk'];
 }
