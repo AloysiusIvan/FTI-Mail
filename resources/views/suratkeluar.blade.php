@@ -329,7 +329,7 @@ table tr td:first-child::before {
 				<thead>
 					<tr>
 						<th>No</th>
-						<th>Tujuan Surat</th>
+						<th>Jenis Surat</th>
 						<th>Mitra</th>
 						<th>Pembuat Surat</th>
 						<th>Keterangan</th>
@@ -368,16 +368,31 @@ table tr td:first-child::before {
 					@endforeach
 				</tbody>
 			</table>
+			<!--PAGINATION-->
+			<?php 
+			$total = $surat->total();
+			$page = $surat->perPage();
+			$current = $surat->currentPage();
+			$totalpage = ceil($total / $page);
+			?>
 			<div class="clearfix">
-				<div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+				<div class="hint-text">Showing <b>{{$surat->count()}}</b> out of <b>{{ $surat->total() }}</b> entries</div>
 				<ul class="pagination">
-					<li class="page-item disabled"><a href="#">Previous</a></li>
-					<li class="page-item active"><a href="#" class="page-link">1</a></li>
-					<li class="page-item"><a href="#" class="page-link">2</a></li>
-					<li class="page-item"><a href="#" class="page-link">3</a></li>
-					<li class="page-item"><a href="#" class="page-link">4</a></li>
-					<li class="page-item"><a href="#" class="page-link">5</a></li>
-					<li class="page-item"><a href="#" class="page-link">Next</a></li>
+				@if ($surat->onFirstPage())
+				@else
+					<li class="page-item"><a href="{{$surat->previousPageUrl()}}" class="page-link">Previous</a></li>
+				@endif
+					@for($i=1 ; $i <= $totalpage ; $i++)
+					@if ($i == $current)
+						<li class="page-item active"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>	
+					@else
+						<li class="page-item"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>
+					@endif
+					@endfor
+				@if ($surat->hasMorePages())
+					<li class="page-item"><a href="{{$surat->nextPageUrl()}}" class="page-link">Next</a></li>
+				@else
+				@endif
 				</ul>
 			</div>
 		</div>
@@ -386,69 +401,231 @@ table tr td:first-child::before {
 <!-- Create Modal HTML -->
 @foreach($surat as $item)
 <div id="infoSuratModal{{$item->id}}" class="modal fade">
-	<div class="modal-dialog">
+	@if ($item->tujuan == "Surat Izin KP"){
+		<div class="modal-dialog">
 		<div class="modal-content">
 			<form action="{{ url('createsurat',$item->id) }}" method="post">
-			@csrf
+			{{ csrf_field() }}
 				<div class="modal-header">						
-					<h4 class="modal-title">Detail Record</h4>
+					<h4 class="modal-title">Add New</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
-				<div class="modal-body">					
+				<div class="modal-body">
 					<div class="form-group">
-					<label>Tujuan Surat</label>
-						<select class="form-control" id="tujuan" name="tujuan" disabled="disabled" required>
-						<option value="" selected disabled hidden>Choose here</option>)
-						<option value="Surat Izin KP" <?php if($item->tujuan=="Surat Izin KP") echo 'selected="selected"'; ?> >Surat Izin KP</option>
-						<option value="Surat Tugas" <?php if($item->tujuan=="Surat Tugas") echo 'selected="selected"'; ?> >Surat Tugas</option>
-						<option value="Surat Keterangan" <?php if($item->tujuan=="Surat Keterangan") echo 'selected="selected"'; ?> >Surat Keterangan</option>
-						<option value="Berita Acara" <?php if($item->tujuan=="Berita Acara") echo 'selected="selected"'; ?> >Berita Acara</option>
-						</select>
+						<label>No. Telepon Mahasiswa</label>
+						<input disabled type="number" class="form-control" id="telp_pembuat" name="telp_pembuat" value ="{{$item->telp_pembuat}}" required>
 					</div>
 					<div class="form-group">
-						<label>Nama Mitra</label>
-						<input type="text" class="form-control" id="mitra" name="mitra" value="{{ $item->mitra }}" disabled="disabled" required>
+						<label>Email Mahasiswa</label>
+						<input disabled type="email" class="form-control" id="email_pembuat" name="email_pembuat" value ="{{$item->email_pembuat}}" required>
 					</div>
 					<div class="form-group">
-						<label>Alamat Mitra</label>
-						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" disabled="disabled" required>{{ $item->alamat_mitra }}</textarea>
+						<label>Nama Perusahaan</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value ="{{$item->mitra}}" required>
 					</div>
 					<div class="form-group">
-						<label>Keterangan</label>
-						<textarea class="form-control" id="keterangan" name="keterangan" disabled="disabled" required>{{ $item->keterangan }}</textarea>
-					</div>
-					@if ($item-> status == "Proses")
-					<div class="form-group">
-						<label>Jenis Surat</label>
-						<select class="form-control" id="kode_surat" name="kode_surat" disabled="disabled" required>
-							<option value="" selected disabled hidden>Choose here</option>
-							<option value="A" <?php if($item->kode_surat=="A") echo 'selected="selected"'; ?>>Surat berkaitan dengan personalia & SK</option>
-							<option value="B" <?php if($item->kode_surat=="B") echo 'selected="selected"'; ?>>Surat keterangan kegiatan mahasiswa</option>
-							<option value="C" <?php if($item->kode_surat=="C") echo 'selected="selected"'; ?>>Surat undangan, daftar hadir kegiatan</option>
-							<option value="D" <?php if($item->kode_surat=="D") echo 'selected="selected"'; ?>>Surat tugas dan DP3</option>
-							<option value="E" <?php if($item->kode_surat=="E") echo 'selected="selected"'; ?>>Berita Acara Kegiatan</option>
-						</select>
+						<label>Alamat Perusahaan</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
 					</div>
 					<div class="form-group">
-						<label>Tanda Tangan</label>
-						<select class="form-control" id="tanda_tangan" name="tanda_tangan" disabled="disabled" required>
-							<option value="" selected disabled hidden>Choose here</option>
-							<option value="Restyandito, S.Kom., MSIS, Ph.D." <?php if($item->tanda_tangan=="Restyandito, S.Kom., MSIS, Ph.D.") echo 'selected="selected"'; ?>>Restyandito, S.Kom., MSIS, Ph.D.</option>
-							<option value="Gloria Virginia, S.Kom., MAI, Ph.D." <?php if($item->tanda_tangan=="Gloria Virginia, S.Kom., MAI, Ph.D.") echo 'selected="selected"'; ?>>Gloria Virginia, S.Kom., MAI, Ph.D.</option>
-							<option value="Drs. Jong Jek Siang, M.Sc." <?php if($item->tanda_tangan=="Drs. Jong Jek Siang, M.Sc.") echo 'selected="selected"'; ?>>Drs. Jong Jek Siang, M.Sc.</option>
-							<option value="Widi Hapsari, Dra., M.T." <?php if($item->tanda_tangan=="Widi Hapsari, Dra., M.T.") echo 'selected="selected"'; ?>>Widi Hapsari, Dra., M.T.</option>
-							<option value="Willy Sudiarto Raharjo, S.Kom., M.Cs." <?php if($item->tanda_tangan=="Willy Sudiarto Raharjo, S.Kom., M.Cs.") echo 'selected="selected"'; ?>>Willy Sudiarto Raharjo, S.Kom., M.Cs.</option>
-						</select>
+						<label>No. Telepon Perusahaan</label>
+						<input disabled type="number" class="form-control" id="tlp_mitra" name="tlp_mitra" value ="{{$item->tlp_mitra}}" required>
 					</div>
-					@endif					
+					<div class="form-group">
+						<label>Tanggal Mulai</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value ="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Selesai</label>
+						<input disabled type="date" class="form-control" id="tgl_selesai" name="tgl_selesai" value ="{{$item->tgl_selesai->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Deskripsi Pekerjaan</label>
+						<textarea disabled class="form-control" id="keterangan" name="keterangan" required>{{$item->keterangan}}</textarea>
+					</div>
 				</div>
 				<div class="modal-footer">
-					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
 					<input type="submit" class="btn btn-success" value="Save">
 				</div>
 			</form>
 		</div>
 	</div>
+	} @elseif ($item->tujuan == "Surat Keterangan Aktif"){
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="{{ url('createsurat',$item->id) }}" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Keperluan</label>
+						<input disabled type="text" class="form-control" id="keterangan" name="keterangan" value ="{{$item->keterangan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat lahir</label>
+						<input disabled type="text" class="form-control" id="tpt_lahir" name="tpt_lahir" value ="{{$item->tpt_lahir}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Lahir</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value ="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+					<input type="submit" class="btn btn-success" value="Save">
+				</div>
+			</form>
+		</div>
+	</div>
+	} @elseif($item->tujuan == "Berita Acara"){
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="{{ url('createsurat',$item->id) }}" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat Pelaksanaan</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
+					</div>
+					<div class="form-group">
+						<label>Nama Kegiatan</label>
+						<input disabled type="text" class="form-control" id="nama_kegiatan" name="nama_kegiatan" value="{{$item->nama_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tema Kegiatan</label>
+						<input disabled type="text" class="form-control" id="tema_kegiatan" name="tema_kegiatan" value="{{$item->tema_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Pembicara / Tamu</label>
+						<input disabled type="text" class="form-control" id="pembicara_tamu" name="pembicara_tamu" value="{{$item->pembicara_tamu}}" required>
+					</div>
+					<div class="form-group">
+						<label>Nama Mitra</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value="{{$item->mitra}}" required>
+					</div>
+					<div class="form-group">
+						<label>Diikuti Oleh</label>
+						<textarea disabled class="form-control" id="diikuti" name="diikuti" required>{{$item->diikuti}}</textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+					<input type="submit" class="btn btn-success" value="Save">
+				</div>
+			</form>
+		</div>
+	</div>
+	} @elseif($item->tujuan == "Surat Tugas"){
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="{{ url('createsurat',$item->id) }}" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Nama Mitra</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value="{{$item->mitra}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat Mitra</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
+					</div>
+					<div class="form-group">
+						<label>Keterangan</label>
+						<textarea disabled class="form-control" id="keterangan" name="keterangan" required>{{$item->keterangan}}</textarea>
+					</div>
+					<div id="peserta" class="form-group">
+						<input disabled type="checkbox" name="peserta" value="Y">
+						<label>Tambah peserta/rekan</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+					<input type="submit" class="btn btn-success" value="Save">
+				</div>
+			</form>
+		</div>
+	</div>
+	}@else{
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="{{ url('createsurat',$item->id) }}" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Hal</label>
+						<input disabled type="text" class="form-control" id="keterangan" name="keterangan" value="{{$item->keterangan}}" required>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+						<label>Penerima Surat</label>
+						<input disabled type="text" class="form-control" id="pembicara_tamu" name="pembicara_tamu" value="{{$item->pembicara_tamu}}" required>
+					</div>
+					<div class="form-group">
+						<label>Jabatan</label>
+						<input disabled type="text" class="form-control" id="jabatan" name="jabatan" value="{{$item->jabatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Mitra</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value="{{$item->mitra}}" required>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+						<label>Kegiatan</label>
+						<input disabled type="text" class="form-control" id="nama_kegiatan" name="nama_kegiatan" value="{{$item->nama_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tema Kegiatan / Bahasan</label>
+						<input disabled type="text" class="form-control" id="tema_kegiatan" name="tema_kegiatan" value="{{$item->tema_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Waktu</label>
+						<input disabled style="width:115px" class="form-control" type="time" id="waktu" name="waktu" value="{{$item->waktu->format('G:i')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat Kegiatan</label>
+						<input disabled class="form-control" type="text" id="alamat_mitra" name="alamat_mitra" value="{{$item->alamat_mitra}}" required>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+					<input type="submit" class="btn btn-success" value="Save">
+				</div>
+			</form>
+		</div>
+	</div>
+	}@endif
 </div>
 @endforeach
 <!-- Edit Modal HTML -->

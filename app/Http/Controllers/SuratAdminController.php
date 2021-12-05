@@ -19,7 +19,7 @@ class SuratAdminController extends Controller
     {
         $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
             ->where('status', NULL)
-            ->get(['surat_masuk.*', 'surat_keluar.status', 'surat_keluar.kode_surat', 'surat_keluar.tanda_tangan'])->sortBy('created_at');
+            ->orderBy('surat_masuk.created_at','ASC')->paginate(5);
         return view('suratadmin', compact('surat'));
     }
 

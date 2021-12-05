@@ -282,7 +282,7 @@ table.table .avatar {
 				<thead>
 					<tr>
 						<th>No. Surat</th>
-						<th>Tujuan Surat</th>
+						<th>Jenis Surat</th>
 						<th>Tanggal Surat</th>
 						<th>Keterangan</th>
 						<th style="width:150px; text-align:center;">User Pembuat</th>
@@ -300,16 +300,31 @@ table.table .avatar {
 					@endforeach
 				</tbody>
 			</table>
+			<!--PAGINATION-->
+			<?php 
+			$total = $surat->total();
+			$page = $surat->perPage();
+			$current = $surat->currentPage();
+			$totalpage = ceil($total / $page);
+			?>
 			<div class="clearfix">
-				<div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+				<div class="hint-text">Showing <b>{{$surat->count()}}</b> out of <b>{{ $surat->total() }}</b> entries</div>
 				<ul class="pagination">
-					<li class="page-item disabled"><a href="#">Previous</a></li>
-					<li class="page-item active"><a href="#" class="page-link">1</a></li>
-					<li class="page-item"><a href="#" class="page-link">2</a></li>
-					<li class="page-item"><a href="#" class="page-link">3</a></li>
-					<li class="page-item"><a href="#" class="page-link">4</a></li>
-					<li class="page-item"><a href="#" class="page-link">5</a></li>
-					<li class="page-item"><a href="#" class="page-link">Next</a></li>
+				@if ($surat->onFirstPage())
+				@else
+					<li class="page-item"><a href="{{$surat->previousPageUrl()}}" class="page-link">Previous</a></li>
+				@endif
+					@for($i=1 ; $i <= $totalpage ; $i++)
+					@if ($i == $current)
+						<li class="page-item active"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>	
+					@else
+						<li class="page-item"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>
+					@endif
+					@endfor
+				@if ($surat->hasMorePages())
+					<li class="page-item"><a href="{{$surat->nextPageUrl()}}" class="page-link">Next</a></li>
+				@else
+				@endif
 				</ul>
 			</div>
 </div>

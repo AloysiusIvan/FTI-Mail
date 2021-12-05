@@ -331,7 +331,7 @@ table tr td:first-child::before {
 				<thead>
 					<tr>
 						<th>No</th>
-						<th>Tujuan Surat</th>
+						<th>Jenis Surat</th>
 						<th>Mitra</th>
 						<th>Alamat Mitra</th>
 						<th>Keterangan</th>
@@ -364,16 +364,31 @@ table tr td:first-child::before {
 					@endforeach
 				</tbody>
 			</table>
+			<!--PAGINATION-->
+			<?php 
+			$total = $surat->total();
+			$page = $surat->perPage();
+			$current = $surat->currentPage();
+			$totalpage = ceil($total / $page);
+			?>
 			<div class="clearfix">
-				<div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+				<div class="hint-text">Showing <b>{{$surat->count()}}</b> out of <b>{{ $surat->total() }}</b> entries</div>
 				<ul class="pagination">
-					<li class="page-item disabled"><a href="#">Previous</a></li>
-					<li class="page-item active"><a href="#" class="page-link">1</a></li>
-					<li class="page-item"><a href="#" class="page-link">2</a></li>
-					<li class="page-item"><a href="#" class="page-link">3</a></li>
-					<li class="page-item"><a href="#" class="page-link">4</a></li>
-					<li class="page-item"><a href="#" class="page-link">5</a></li>
-					<li class="page-item"><a href="#" class="page-link">Next</a></li>
+				@if ($surat->onFirstPage())
+				@else
+					<li class="page-item"><a href="{{$surat->previousPageUrl()}}" class="page-link">Previous</a></li>
+				@endif
+					@for($i=1 ; $i <= $totalpage ; $i++)
+					@if ($i == $current)
+						<li class="page-item active"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>	
+					@else
+						<li class="page-item"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>
+					@endif
+					@endfor
+				@if ($surat->hasMorePages())
+					<li class="page-item"><a href="{{$surat->nextPageUrl()}}" class="page-link">Next</a></li>
+				@else
+				@endif
 				</ul>
 			</div>
 		</div>
@@ -511,10 +526,6 @@ table tr td:first-child::before {
 						<label>Deskripsi Pekerjaan</label>
 						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
 					</div>
-					<div id="peserta" class="form-group">
-						<input type="checkbox" name="peserta" value="Y">
-						<label>Tambah peserta/rekan</label>
-					</div>
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -568,10 +579,6 @@ table tr td:first-child::before {
 					<div class="form-group">
 						<label>Diikuti Oleh</label>
 						<textarea class="form-control" id="diikuti" name="diikuti" required></textarea>
-					</div>
-					<div id="peserta" class="form-group">
-						<input type="checkbox" name="peserta" value="Y">
-						<label>Tambah peserta/rekan</label>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -733,10 +740,6 @@ table tr td:first-child::before {
 						<label>Deskripsi Pekerjaan</label>
 						<textarea class="form-control" id="keterangan" name="keterangan" required>{{$item->keterangan}}</textarea>
 					</div>
-					<div id="peserta" class="form-group">
-						<input type="checkbox" name="peserta" value="Y">
-						<label>Tambah peserta/rekan</label>
-					</div>
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -816,10 +819,6 @@ table tr td:first-child::before {
 					<div class="form-group">
 						<label>Diikuti Oleh</label>
 						<textarea class="form-control" id="diikuti" name="diikuti" required>{{$item->diikuti}}</textarea>
-					</div>
-					<div id="peserta" class="form-group">
-						<input type="checkbox" name="peserta" value="Y">
-						<label>Tambah peserta/rekan</label>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -909,7 +908,7 @@ table tr td:first-child::before {
 					</div>
 					<div class="form-group">
 						<label>Waktu</label>
-						<input style="width:115px" class="form-control" type="time" id="waktu" name="waktu" value="{{$item->waktu}}" required>
+						<input style="width:115px" class="form-control" type="time" id="waktu" name="waktu" value="{{$item->waktu->format('G:i')}}" required>
 					</div>
 					<div class="form-group">
 						<label>Tempat Kegiatan</label>

@@ -325,7 +325,7 @@ table tr td:first-child::before {
 				<thead>
 					<tr>
 						<th>No</th>
-						<th>Tujuan Surat</th>
+						<th>Jenis Surat</th>
 						<th>Mitra</th>
 						<th>Pembuat Surat</th>
 						<th>Keterangan</th>
@@ -349,16 +349,31 @@ table tr td:first-child::before {
 					@endforeach
 				</tbody>
 			</table>
+			<!--PAGINATION-->
+			<?php 
+			$total = $surat->total();
+			$page = $surat->perPage();
+			$current = $surat->currentPage();
+			$totalpage = ceil($total / $page);
+			?>
 			<div class="clearfix">
-				<div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+				<div class="hint-text">Showing <b>{{$surat->count()}}</b> out of <b>{{ $surat->total() }}</b> entries</div>
 				<ul class="pagination">
-					<li class="page-item disabled"><a href="#">Previous</a></li>
-					<li class="page-item active"><a href="#" class="page-link">1</a></li>
-					<li class="page-item"><a href="#" class="page-link">2</a></li>
-					<li class="page-item"><a href="#" class="page-link">3</a></li>
-					<li class="page-item"><a href="#" class="page-link">4</a></li>
-					<li class="page-item"><a href="#" class="page-link">5</a></li>
-					<li class="page-item"><a href="#" class="page-link">Next</a></li>
+				@if ($surat->onFirstPage())
+				@else
+					<li class="page-item"><a href="{{$surat->previousPageUrl()}}" class="page-link">Previous</a></li>
+				@endif
+					@for($i=1 ; $i <= $totalpage ; $i++)
+					@if ($i == $current)
+						<li class="page-item active"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>	
+					@else
+						<li class="page-item"><a href="{{$surat->url($i)}}" class="page-link">{{$i}}</a></li>
+					@endif
+					@endfor
+				@if ($surat->hasMorePages())
+					<li class="page-item"><a href="{{$surat->nextPageUrl()}}" class="page-link">Next</a></li>
+				@else
+				@endif
 				</ul>
 			</div>
 		</div>
@@ -383,11 +398,15 @@ table tr td:first-child::before {
 					</div>
 					<hr class="mt-2 mb-3"/>
 					<div class="form-group">
-					<a href="#addSuratModa2l" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Keterangan</a>
+					<a href="#addSuratModalsk" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Keterangan</a>
 					</div>
 					<hr class="mt-2 mb-3"/>
 					<div class="form-group">
 					<a href="#addSuratModalberitaacara" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Berita Acara</a>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+					<a href="#addSuratModalundangan" class="btn btn-success d-grid gap-2" data-toggle="modal">Surat Undangan</a>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -412,7 +431,7 @@ table tr td:first-child::before {
 						<input type="hidden" id="tujuan" name="tujuan" value="Surat Tugas">
 					</div>
 					<div class="form-group">
-						<label>NIM / NID</label>
+						<label>NID</label>
 						<input type="text" class="form-control" id="username" name="username" required>
 					</div>
 					<div class="form-group">
@@ -448,7 +467,7 @@ table tr td:first-child::before {
 <div id="addSuratModalkp" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form action="/addsurat" method="post">
+			<form action="/addsuratadmin" method="post">
 			{{ csrf_field() }}
 				<div class="modal-header">						
 					<h4 class="modal-title">Add New</h4>
@@ -456,18 +475,11 @@ table tr td:first-child::before {
 				</div>
 				<div class="modal-body">					
 					<div class="form-group">
-						<input type="hidden" id="username" name="username" value="{{auth()->user()->username}}">
-						<input type="hidden" id="name" name="name" value="{{auth()->user()->name}}">
-						<input type="hidden" id="levels" name="levels" value="{{auth()->user()->levels}}">
 						<input type="hidden" id="tujuan" name="tujuan" value="Surat Izin KP">
 					</div>
 					<div class="form-group">
-						<label>No. Telepon Mahasiswa</label>
-						<input type="number" class="form-control" id="telp_pembuat" name="telp_pembuat" required>
-					</div>
-					<div class="form-group">
-						<label>Email Mahasiswa</label>
-						<input type="email" class="form-control" id="email_pembuat" name="email_pembuat" required>
+						<label>NIM</label>
+						<input type="text" class="form-control" id="username" name="username" required>
 					</div>
 					<div class="form-group">
 						<label>Nama Perusahaan</label>
@@ -493,10 +505,6 @@ table tr td:first-child::before {
 						<label>Deskripsi Pekerjaan</label>
 						<textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
 					</div>
-					<div id="peserta" class="form-group">
-						<input type="checkbox" name="peserta" value="Y">
-						<label>Tambah peserta/rekan</label>
-					</div>
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -510,7 +518,7 @@ table tr td:first-child::before {
 <div id="addSuratModalberitaacara" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form action="/addsurat" method="post">
+			<form action="/addsuratadmin" method="post">
 			{{ csrf_field() }}
 				<div class="modal-header">						
 					<h4 class="modal-title">Add New</h4>
@@ -518,10 +526,11 @@ table tr td:first-child::before {
 				</div>
 				<div class="modal-body">					
 					<div class="form-group">
-						<input type="hidden" id="username" name="username" value="{{auth()->user()->username}}">
-						<input type="hidden" id="name" name="name" value="{{auth()->user()->name}}">
-						<input type="hidden" id="levels" name="levels" value="{{auth()->user()->levels}}">
 						<input type="hidden" id="tujuan" name="tujuan" value="Berita Acara">
+					</div>
+					<div class="form-group">
+						<label>NIM / NID</label>
+						<input type="text" class="form-control" id="username" name="username" required>
 					</div>
 					<div class="form-group">
 						<label>Tanggal Kegiatan</label>
@@ -551,9 +560,113 @@ table tr td:first-child::before {
 						<label>Diikuti Oleh</label>
 						<textarea class="form-control" id="diikuti" name="diikuti" required></textarea>
 					</div>
-					<div id="peserta" class="form-group">
-						<input type="checkbox" name="peserta" value="Y">
-						<label>Tambah peserta/rekan</label>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="submit" class="btn btn-success" value="Add">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- Add Modal HTML SURAT KETARANGAN AKTIF KULIAH -->
+<div id="addSuratModalsk" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="/addsuratadmin" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+						<input type="hidden" id="tujuan" name="tujuan" value="Surat Keterangan Aktif">
+					</div>
+					<div class="form-group">
+						<label>NIM / NID</label>
+						<input type="text" class="form-control" id="username" name="username" required>
+					</div>
+					<div class="form-group">
+						<label>Keperluan</label>
+						<input type="text" class="form-control" id="keterangan" name="keterangan" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat lahir</label>
+						<input type="text" class="form-control" id="tpt_lahir" name="tpt_lahir" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Lahir</label>
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat</label>
+						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" required></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="submit" class="btn btn-success" value="Add">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- Add Modal HTML SURAT UNDANGAN -->
+<div id="addSuratModalundangan" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form action="/addsuratadmin" method="post">
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+					<div class="form-group">
+						<input type="hidden" id="tujuan" name="tujuan" value="Surat Undangan">
+					</div>
+					<div class="form-group">
+						<label>NIM / NID</label>
+						<input type="text" class="form-control" id="username" name="username" required>
+					</div>
+					<div class="form-group">
+						<label>Hal</label>
+						<input type="text" class="form-control" id="keterangan" name="keterangan" required>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+						<label>Penerima Surat</label>
+						<input type="text" class="form-control" id="pembicara_tamu" name="pembicara_tamu" required>
+					</div>
+					<div class="form-group">
+						<label>Jabatan</label>
+						<input type="text" class="form-control" id="jabatan" name="jabatan" required>
+					</div>
+					<div class="form-group">
+						<label>Mitra</label>
+						<input type="text" class="form-control" id="mitra" name="mitra" required>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+						<label>Kegiatan</label>
+						<input type="text" class="form-control" id="nama_kegiatan" name="nama_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Tema Kegiatan / Bahasan</label>
+						<input type="text" class="form-control" id="tema_kegiatan" name="tema_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" required>
+					</div>
+					<div class="form-group">
+						<label>Waktu</label>
+						<input style="width:115px" class="form-control" type="time" id="waktu" name="waktu" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat Kegiatan</label>
+						<input class="form-control" type="text" id="alamat_mitra" name="alamat_mitra" required>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -611,44 +724,226 @@ table tr td:first-child::before {
 <!-- Info Modal HTML -->
 @foreach($surat as $item)
 <div id="infoSuratModal{{$item->id}}" class="modal fade">
-	<div class="modal-dialog">
+	@if ($item->tujuan == "Surat Izin KP"){
+		<div class="modal-dialog">
 		<div class="modal-content">
-			<form action="{{ url('updatesurat',$item->id) }}" method="post">
-			@csrf
+			<form>
+			{{ csrf_field() }}
 				<div class="modal-header">						
-					<h4 class="modal-title">Detail Record</h4>
+					<h4 class="modal-title">Add New</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
-				<div class="modal-body">					
+				<div class="modal-body">
 					<div class="form-group">
-					<label>Tujuan Surat</label>
-						<select class="form-control" id="tujuan" name="tujuan" disabled="disabled" required>
-						<option value="" selected disabled hidden>Choose here</option>)
-						<option value="Surat Izin KP" <?php if($item->tujuan=="Surat Izin KP") echo 'selected="selected"'; ?> >Surat Izin KP</option>
-						<option value="Surat Tugas" <?php if($item->tujuan=="Surat Tugas") echo 'selected="selected"'; ?> >Surat Tugas</option>
-						<option value="Surat Keterangan" <?php if($item->tujuan=="Surat Keterangan") echo 'selected="selected"'; ?> >Surat Keterangan</option>
-						<option value="Berita Acara" <?php if($item->tujuan=="Berita Acara") echo 'selected="selected"'; ?> >Berita Acara</option>
-						</select>
+						<label>No. Telepon Mahasiswa</label>
+						<input disabled type="text" class="form-control" id="telp_pembuat" name="telp_pembuat" value ="{{$item->telp_pembuat}}" required>
 					</div>
 					<div class="form-group">
-						<label>Nama Mitra</label>
-						<input type="text" class="form-control" id="mitra" name="mitra" value="{{ $item->mitra }}" disabled="disabled" required>
+						<label>Email Mahasiswa</label>
+						<input disabled type="email" class="form-control" id="email_pembuat" name="email_pembuat" value ="{{$item->email_pembuat}}" required>
 					</div>
 					<div class="form-group">
-						<label>Alamat Mitra</label>
-						<textarea class="form-control" id="alamat_mitra" name="alamat_mitra" disabled="disabled" required>{{ $item->alamat_mitra }}</textarea>
+						<label>Nama Perusahaan</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value ="{{$item->mitra}}" required>
 					</div>
 					<div class="form-group">
-						<label>Keterangan</label>
-						<textarea class="form-control" id="keterangan" name="keterangan" disabled="disabled" required>{{ $item->keterangan }}</textarea>
-					</div>					
+						<label>Alamat Perusahaan</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
+					</div>
+					<div class="form-group">
+						<label>No. Telepon Perusahaan</label>
+						<input disabled type="number" class="form-control" id="tlp_mitra" name="tlp_mitra" value ="{{$item->tlp_mitra}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Mulai</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value ="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Selesai</label>
+						<input disabled type="date" class="form-control" id="tgl_selesai" name="tgl_selesai" value ="{{$item->tgl_selesai->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Deskripsi Pekerjaan</label>
+						<textarea disabled class="form-control" id="keterangan" name="keterangan" required>{{$item->keterangan}}</textarea>
+					</div>
 				</div>
 				<div class="modal-footer">
-					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
 				</div>
 			</form>
 		</div>
 	</div>
+	} @elseif ($item->tujuan == "Surat Keterangan Aktif"){
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form>
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Keperluan</label>
+						<input disabled type="text" class="form-control" id="keterangan" name="keterangan" value ="{{$item->keterangan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat lahir</label>
+						<input disabled type="text" class="form-control" id="tpt_lahir" name="tpt_lahir" value ="{{$item->tpt_lahir}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Lahir</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value ="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+				</div>
+			</form>
+		</div>
+	</div>
+	} @elseif($item->tujuan == "Berita Acara"){
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form>
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat Pelaksanaan</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
+					</div>
+					<div class="form-group">
+						<label>Nama Kegiatan</label>
+						<input disabled type="text" class="form-control" id="nama_kegiatan" name="nama_kegiatan" value="{{$item->nama_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tema Kegiatan</label>
+						<input disabled type="text" class="form-control" id="tema_kegiatan" name="tema_kegiatan" value="{{$item->tema_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Pembicara / Tamu</label>
+						<input disabled type="text" class="form-control" id="pembicara_tamu" name="pembicara_tamu" value="{{$item->pembicara_tamu}}" required>
+					</div>
+					<div class="form-group">
+						<label>Nama Mitra</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value="{{$item->mitra}}" required>
+					</div>
+					<div class="form-group">
+						<label>Diikuti Oleh</label>
+						<textarea disabled class="form-control" id="diikuti" name="diikuti" required>{{$item->diikuti}}</textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+				</div>
+			</form>
+		</div>
+	</div>
+	} @elseif($item->tujuan == "Surat Tugas"){
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form>
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Nama Mitra</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value="{{$item->mitra}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Alamat Mitra</label>
+						<textarea disabled class="form-control" id="alamat_mitra" name="alamat_mitra" required>{{$item->alamat_mitra}}</textarea>
+					</div>
+					<div class="form-group">
+						<label>Keterangan</label>
+						<textarea disabled class="form-control" id="keterangan" name="keterangan" required>{{$item->keterangan}}</textarea>
+					</div>
+					<div id="peserta" class="form-group">
+						<input disabled type="checkbox" name="peserta" value="Y">
+						<label>Tambah peserta/rekan</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+				</div>
+			</form>
+		</div>
+	</div>
+	}@else{
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<form>
+			{{ csrf_field() }}
+				<div class="modal-header">						
+					<h4 class="modal-title">Add New</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Hal</label>
+						<input disabled type="text" class="form-control" id="keterangan" name="keterangan" value="{{$item->keterangan}}" required>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+						<label>Penerima Surat</label>
+						<input disabled type="text" class="form-control" id="pembicara_tamu" name="pembicara_tamu" value="{{$item->pembicara_tamu}}" required>
+					</div>
+					<div class="form-group">
+						<label>Jabatan</label>
+						<input disabled type="text" class="form-control" id="jabatan" name="jabatan" value="{{$item->jabatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Mitra</label>
+						<input disabled type="text" class="form-control" id="mitra" name="mitra" value="{{$item->mitra}}" required>
+					</div>
+					<hr class="mt-2 mb-3"/>
+					<div class="form-group">
+						<label>Kegiatan</label>
+						<input disabled type="text" class="form-control" id="nama_kegiatan" name="nama_kegiatan" value="{{$item->nama_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tema Kegiatan / Bahasan</label>
+						<input disabled type="text" class="form-control" id="tema_kegiatan" name="tema_kegiatan" value="{{$item->tema_kegiatan}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tanggal Kegiatan</label>
+						<input disabled type="date" class="form-control" id="tgl_kegiatan" name="tgl_kegiatan" value="{{$item->tgl_kegiatan->format('Y-m-d')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Waktu</label>
+						<input disabled style="width:115px" class="form-control" type="time" id="waktu" name="waktu" value="{{$item->waktu->format('G:i')}}" required>
+					</div>
+					<div class="form-group">
+						<label>Tempat Kegiatan</label>
+						<input disabled class="form-control" type="text" id="alamat_mitra" name="alamat_mitra" value="{{$item->alamat_mitra}}" required>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+				</div>
+			</form>
+		</div>
+	</div>
+	}@endif
 </div>
 @endforeach
 <!-- Tolak Modal HTML -->

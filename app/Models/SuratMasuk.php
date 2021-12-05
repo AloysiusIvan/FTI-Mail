@@ -16,5 +16,5 @@ class SuratMasuk extends Model
         'id_peserta' => 'array', 'nama_peserta' => 'array'
     ];
 
-    protected $dates = ['tgl_kegiatan', 'tgl_selesai'];
+    protected $dates = ['tgl_kegiatan', 'tgl_selesai', 'waktu'];
 }

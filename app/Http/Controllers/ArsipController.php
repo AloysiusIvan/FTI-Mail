@@ -24,12 +24,11 @@ class ArsipController extends Controller
         if ($level != "admin"){
             $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
                 ->where([['username', $username], ['status', '!=', NULL]])
-                ->get(['surat_masuk.*', 'surat_keluar.status'])->sortByDesc('updated_at');
+                ->orderBy('surat_masuk.updated_at','DESC')->paginate(5);
             return view('arsip', compact('surat'));
         } else{
             $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
-                ->where('status', 'Selesai')
-                ->get(['surat_masuk.*', 'surat_keluar.kode_surat'])->sortByDesc('updated_at');
+                ->where('status', 'Selesai')->orderBy('surat_masuk.created_at','DESC')->paginate(5);
             return view('arsipadmin', compact('surat'));
         }
     }
@@ -111,7 +110,7 @@ class ArsipController extends Controller
             if($prod == "72"){
                 $prodi = "Sistem Informasi";
             }
-            if ($surat[0]->username == "72"){
+            if ($surat[0]->levels == "mahasiswa"){
                 $pdfin = PDF::loadView('template_surat.surat_keterangan_aktif', compact('surat', 'tahun', 'prodi'));
                 $pdfin->setPaper('A4', 'portrait');
                 return $pdfin->stream('surat_keterangan_'.$id.'.pdf');
