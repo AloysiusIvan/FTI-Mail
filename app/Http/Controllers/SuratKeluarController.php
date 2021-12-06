@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
+use App\Models\SuratJadi;
 use Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Novay\WordTemplate\Facade\WordTemplate;
@@ -66,6 +67,8 @@ class SuratKeluarController extends Controller
     {
         $surat = SuratKeluar::findorfail($id);
         $surat->update(array('status' => 'Selesai'));
+        $id = $surat->id;
+        SuratJadi::create(['id_suratjadi'=>$id]);
         return redirect('suratkeluar')->with('toast_success', 'Record berhasil diupdate!');
     }
 

@@ -27,8 +27,8 @@ class ArsipController extends Controller
                 ->orderBy('surat_masuk.updated_at','DESC')->paginate(5);
             return view('arsip', compact('surat'));
         } else{
-            $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
-                ->where('status', 'Selesai')->orderBy('surat_masuk.created_at','DESC')->paginate(5);
+            $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')->join('surat_jadi', 'surat_keluar.id', '=', 'surat_jadi.id_suratjadi')
+                ->where('status', 'Selesai')->orderBy('surat_jadi.created_at','DESC')->paginate(5);
             return view('arsipadmin', compact('surat'));
         }
     }
@@ -73,7 +73,10 @@ class ArsipController extends Controller
      */
     public function cetak($id)
     {
-        $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
+        $surat = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')->join('surat_jadi', 'surat_keluar.id', '=', 'surat_jadi.id_suratjadi')
+            ->where('surat_masuk.id', $id)
+            ->get(['surat_masuk.*', 'status', 'kode_surat', 'tanda_tangan', 'surat_jadi.*']);
+        $tugas = SuratMasuk::join('surat_keluar', 'surat_masuk.id', '=', 'surat_keluar.id')
             ->where('surat_masuk.id', $id)
             ->get(['surat_masuk.*', 'status', 'kode_surat', 'tanda_tangan']);
         $id = auth()->user()->username;
@@ -82,7 +85,7 @@ class ArsipController extends Controller
         if ($tujuan == "Surat Tugas"){
             $peserta = $surat[0]->peserta;
             if ($peserta == "E"){
-                $id_surat = $surat[0]->id;
+                $id_surat = $tugas[0]->id;
                 $peserta = Peserta::join('mahasiswa', 'peserta.id_peserta', '=', 'mahasiswa.nim')
                     ->where('id_surat', $id_surat)
                     ->get(['peserta.*', 'mahasiswa.nama']);

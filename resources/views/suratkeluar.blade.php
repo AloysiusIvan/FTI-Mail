@@ -413,7 +413,7 @@ table tr td:first-child::before {
 				<div class="modal-body">
 					<div class="form-group">
 						<label>No. Telepon Mahasiswa</label>
-						<input disabled type="number" class="form-control" id="telp_pembuat" name="telp_pembuat" value ="{{$item->telp_pembuat}}" required>
+						<input disabled type="text" class="form-control" id="telp_pembuat" name="telp_pembuat" value ="{{$item->telp_pembuat}}" required>
 					</div>
 					<div class="form-group">
 						<label>Email Mahasiswa</label>
