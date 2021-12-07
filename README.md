@@ -24,3 +24,8 @@ Informasi yang diterima jelas & akurat
 
 Aloysius Ivan<br>
 Meidianti Ayu.
+
+
+## Framework
+
+Laravel
