@@ -23,7 +23,7 @@ Informasi yang diterima jelas & akurat
 ## Creator
 
 Aloysius Ivan<br>
-Meidianti Ayu.
+Meidianti Ayu
 
 
 ## Framework
