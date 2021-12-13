@@ -1,7 +1,7 @@
 <p align="center"><img src="https://i.ibb.co/kmQgNHZ/ff1d228afcc78e7657fabc6eb411c8bb.png" width="400"></p>
 
 <p align="center">
-Aloysius Ivan<br>Universitas Kristen Duta Wacana<br>Fakultas Teknologi Informasi<br>Program Studi Sistem Indormasi
+Aloysius Ivan<br>Meidianti Ayu<br>Universitas Kristen Duta Wacana<br>Fakultas Teknologi Informasi<br>Program Studi Sistem Indormasi
 </p>
 
 ## About
